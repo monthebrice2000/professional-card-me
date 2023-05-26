@@ -15,16 +15,7 @@ const Index = () => {
         />
       }
     >
-      <div
-        className="bg-cover bg-center bg-no-repeat"
-        style={{
-          position: 'absolute',
-          width: `${100}vw`,
-          height: `${100}vh`,
-          zIndex: -1000,
-          backgroundImage: `url('https://ik.imagekit.io/kjatsnf4j/1_Ww-ei5cz4XEgz83npDHXDg_EQCwL-BpEI.jpeg?updatedAt=1684955897623')`,
-        }}
-      >
+      <div>
         <div className="mx-auto my-32 flex h-auto max-w-4xl flex-wrap items-center lg:my-0 lg:h-screen">
           <div
             id="profile"
@@ -74,6 +65,7 @@ const Index = () => {
                   href="https://monthebrice2000.github.io/my-portfolio/"
                   type="button"
                   className="mb-2 mr-2 inline-flex items-center rounded-full bg-green-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-green-900 focus:outline-none  focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800"
+                  target="_blank"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -95,6 +87,7 @@ const Index = () => {
                   href="https://monthebrice2000.github.io/my-portfolio/documents/MONTHE_DJEUMOU_BRICE_CV_DevSecTestOps.pdf"
                   type="button"
                   className="mb-2 mr-2 inline-flex items-center rounded-full bg-green-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-green-900 focus:outline-none  focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800"
+                  target="_blank"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -103,6 +96,7 @@ const Index = () => {
                     viewBox="0 0 24 24"
                     strokeWidth="1.5"
                     stroke="currentColor"
+                    target="_blank"
                   >
                     <path
                       strokeLinecap="round"

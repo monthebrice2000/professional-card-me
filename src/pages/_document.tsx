@@ -10,8 +10,15 @@ class MyDocument extends Document {
       <Html lang={AppConfig.locale}>
         <Head />
         <body
-          className="bg-cover font-sans leading-normal tracking-wider text-gray-900 antialiased"
-          style={{}}
+          className="bg-cover font-sans leading-normal tracking-wider text-gray-900 antialiased bg-center bg-no-repeat"
+          // className="bg-cover bg-center bg-no-repeat"
+          style={{
+            // position: 'absolute',
+            width: `${100}vw`,
+            height: `${100}vh`,
+            zIndex: -1000,
+            backgroundImage: `url('https://ik.imagekit.io/kjatsnf4j/1_Ww-ei5cz4XEgz83npDHXDg_EQCwL-BpEI.jpeg?updatedAt=1684955897623')`,
+          }}
         >
           <Main />
           <NextScript />
