@@ -4,7 +4,33 @@ import { Meta } from '@/layouts/Meta';
 import { Main } from '@/templates/Main';
 
 const Index = () => {
-  // const router = useRouter();
+  // const router = useRouter();  
+  function handleClick(){
+    console.log("toogle mode")
+    //Toggle mode
+		const toggle : any = document.querySelector('.js-change-theme');
+		const body : any = document.querySelector('body');
+		const profile : any = document.getElementById('profile');
+    
+    if (body.classList.contains('text-gray-900')) {
+      toggle.innerHTML = "☀️";
+      body.classList.remove('text-gray-900');
+      body.classList.add('text-gray-100');
+      profile.classList.remove('bg-white');
+      profile.classList.add('bg-gray-900');
+    } else {
+      toggle.innerHTML = "🌙";
+      body.classList.remove('text-gray-100');
+      body.classList.add('text-gray-900');
+      profile.classList.remove('bg-gray-900');			
+      profile.classList.add('bg-white');
+    }
+		
+		// toggle.addEventListener('click', () => {
+
+
+		// });
+  }
 
   return (
     <Main
@@ -109,6 +135,31 @@ const Index = () => {
               </div>
 
               <div className="mx-auto mt-6 flex w-4/5 flex-wrap items-center justify-center pb-16 lg:w-full lg:pb-0">
+              <a
+                  className="link mr-2"
+                  href="mailto:monthedjeumoubrice2000@gmail.com"
+                  data-tippy-content="@facebook_handle"
+                  target="_blank"
+                >
+                  {/* <svg
+                    className="h-6 fill-current text-gray-600 hover:text-green-700"
+                    role="img"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <title>Facebook</title>
+                    <path d="M22.676 0H1.324C.593 0 0 .593 0 1.324v21.352C0 23.408.593 24 1.324 24h11.494v-9.294H9.689v-3.621h3.129V8.41c0-3.099 1.894-4.785 4.659-4.785 1.325 0 2.464.097 2.796.141v3.24h-1.921c-1.5 0-1.792.721-1.792 1.771v2.311h3.584l-.465 3.63H16.56V24h6.115c.733 0 1.325-.592 1.325-1.324V1.324C24 .593 23.408 0 22.676 0" />
+                  </svg> */}
+                  <svg 
+                    className="h-8 fill-current text-gray-600 hover:text-green-700"
+                    role="img"
+                    xmlns="http://www.w3.org/2000/svg" 
+                    viewBox="0 0 512 512"
+                  >
+                    <path d="M424 80H88a56.06 56.06 0 00-56 56v240a56.06 56.06 0 0056 56h336a56.06 56.06 0 0056-56V136a56.06 56.06 0 00-56-56zm-14.18 92.63l-144 112a16 16 0 01-19.64 0l-144-112a16 16 0 1119.64-25.26L256 251.73l134.18-104.36a16 16 0 0119.64 25.26z"/>
+                    <title>Email</title>
+                  </svg>
+                </a>
                 <a
                   className="link mr-2"
                   href="https://www.facebook.com/brice.monthe.35/"
@@ -176,6 +227,7 @@ const Index = () => {
             <button
               type="button"
               className="js-change-theme focus:outline-none"
+              onClick={handleClick}
             >
               🌙
             </button>
