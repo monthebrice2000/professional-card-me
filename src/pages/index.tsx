@@ -87,7 +87,7 @@ const Index = () => {
               <div className="flex flex-wrap items-center justify-center pb-8 pt-12">
                 {/* <button type="button" className="text-white bg-green-700 hover:bg-green-900 focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Contact Me</button> */}
                 <a
-                  href="https://monthebrice2000.github.io/my-portfolio/"
+                  href="https://steady-rugelach-972b61.netlify.app/"
                   type="button"
                   className="mb-2 mr-2 inline-flex items-center rounded-full bg-green-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-green-900 focus:outline-none  focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800"
                   target="_blank"
