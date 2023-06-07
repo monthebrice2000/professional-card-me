@@ -10,7 +10,7 @@ class MyDocument extends Document {
       <Html lang={AppConfig.locale}>
         <Head />
         <body
-          className="bg-cover font-sans leading-normal tracking-wider text-gray-900 antialiased bg-center bg-no-repeat"
+          className="bg-cover bg-center bg-no-repeat font-sans leading-normal tracking-wider text-gray-900 antialiased"
           // className="bg-cover bg-center bg-no-repeat"
           style={{
             // position: 'absolute',
@@ -22,7 +22,6 @@ class MyDocument extends Document {
         >
           <Main />
           <NextScript />
-          
         </body>
       </Html>
     );
