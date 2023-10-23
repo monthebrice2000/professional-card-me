@@ -109,7 +109,7 @@ const Index = () => {
                   Contact Me
                 </a>
                 <a
-                  href="https://monthebrice2000.github.io/my-portfolio/documents/MONTHE_DJEUMOU_BRICE_CV_DevSecTestOps.pdf"
+                  href="https://monthebrice2000.github.io/my-portfolio/documents/MONTHE_DJEUMOU_BRICE_CV_DevSecOps.pdf"
                   type="button"
                   className="mb-2 mr-2 inline-flex items-center rounded-full bg-green-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-green-900 focus:outline-none  focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800"
                   target="_blank"
