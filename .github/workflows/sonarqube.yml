@@ -47,7 +47,7 @@ jobs:
     - uses: actions/setup-java@v3
       with:
         distribution: 'temurin' # See 'Supported distributions' for available options
-        java-version: '17'
+        java-version: '8'
     # Setup sonar-scanner
     - name: Setup SonarQube
       uses: warchant/setup-sonar-scanner@v7
