@@ -50,7 +50,7 @@ jobs:
         java-version: '8'
     # Setup sonar-scanner
     - name: Setup SonarQube
-      uses: warchant/setup-sonar-scanner@v6
+      uses: warchant/setup-sonar-scanner@v3
     # Run sonar-scanner
     - name: SonarQube Scan
       run: sonar-scanner
