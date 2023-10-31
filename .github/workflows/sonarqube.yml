@@ -39,6 +39,8 @@ permissions:
 
 jobs:
   depchecktest:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     name: depecheck_test
     steps:
