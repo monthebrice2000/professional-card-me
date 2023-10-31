@@ -63,6 +63,14 @@ jobs:
           base: ${{ github.event.repository.default_branch }}
           head: HEAD
           # extra_args: --debug --only-verified
+  lint-docker:
+    needs: TruffleHog
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3 
+      - uses: hadolint/hadolint-action@v2.1.0
+        with:
+          dockerfile: Dockerfile
   depchecktest:
     needs: scan-secrets
     permissions:
