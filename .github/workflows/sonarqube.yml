@@ -38,7 +38,18 @@ permissions:
   contents: read
 
 jobs:
+  scan-secrets:
+    name: gitleaks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   depchecktest:
+    needs: scan-secrets
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -64,9 +75,9 @@ jobs:
         with:
            name: Depcheck report
            path: ${{github.workspace}}/reports
-           env-url: FOOBAR
-      - name: Use URL for something
-        run: echo "${{ env.FOOBAR }}"
+      #     env-url: FOOBAR
+      #- name: Use URL for something
+      #  run: echo "${{ env.FOOBAR }}"
   semgrep-ci:
     needs: depchecktest
     runs-on: ubuntu-latest
