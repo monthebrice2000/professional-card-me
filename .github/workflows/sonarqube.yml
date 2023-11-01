@@ -199,7 +199,7 @@ jobs:
           #   DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
           run: |
             results=$(docker pull ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest | docker images -q ${{ secrets.DOCKER_REGISTRY }}/profesional-card)
-            if [[ -n $result ]]; then
+            if [[ -n $results ]]; then
               echo "images exist"
             else
               echo "Container doesn't exist"
