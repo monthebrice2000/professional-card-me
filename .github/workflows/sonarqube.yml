@@ -251,42 +251,47 @@ jobs:
             docker pull ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest
             docker pull ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest
         
-        - name: Scan profesional-card image 
-          uses: anchore/scan-action@v3
-          id: imagescanpc
-          with:
-            image: ${{ secrets.DOCKER_REGISTRY }}/profesional-card
-            registry-username: ${{ secrets.DOCKER_USERNAME }}
-            registry-password: ${{ secrets.DOCKER_PASSWORD }}
-            acs-report-enable: "true"
-            fail-build: false
+        # - name: Scan profesional-card image 
+        #   uses: anchore/scan-action@v3
+        #   id: imagescanpc
+        #   with:
+        #     image: ${{ secrets.DOCKER_REGISTRY }}/profesional-card
+        #     registry-username: ${{ secrets.DOCKER_USERNAME }}
+        #     registry-password: ${{ secrets.DOCKER_PASSWORD }}
+        #     acs-report-enable: "true"
+        #     fail-build: false
         
-        - name: upload Anchore Image scan SARIF report
-          uses: github/codeql-action/upload-sarif@v2
-          with:
-            sarif_file: ${{ steps.imagescanpc.outputs.sarif }}
+        # - name: upload Anchore Image scan SARIF report
+        #   uses: github/codeql-action/upload-sarif@v2
+        #   with:
+        #     sarif_file: ${{ steps.imagescanpc.outputs.sarif }}
         
-        - name: Scan nginx-proxy image 
-          uses: anchore/scan-action@v3
-          id: imagescannp
-          with:
-            image: ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy
-            registry-username: ${{ secrets.DOCKER_USERNAME }}
-            registry-password: ${{ secrets.DOCKER_PASSWORD }}
-            acs-report-enable: "true"
-            fail-build: false
+        # - name: Scan nginx-proxy image 
+        #   uses: anchore/scan-action@v3
+        #   id: imagescannp
+        #   with:
+        #     image: ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy
+        #     registry-username: ${{ secrets.DOCKER_USERNAME }}
+        #     registry-password: ${{ secrets.DOCKER_PASSWORD }}
+        #     acs-report-enable: "true"
+        #     fail-build: false
         
+        # - name: upload Anchore nginx-proxy Image scan SARIF report
+        #   uses: github/codeql-action/upload-sarif@v2
+        #   with:
+        #     sarif_file: ${{ steps.imagescannp.outputs.sarif }}
+        
+        - uses: anchore/scan-action/download-grype@v3
+          id: grype 
+        
+        - run: |
+            grype ${{ secrets.DOCKER_REGISTRY }}/profesional-card -o sarif > result1.sarif
+            grype ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest -o sarif > result2.sarif
+
         - name: upload Anchore nginx-proxy Image scan SARIF report
           uses: github/codeql-action/upload-sarif@v2
           with:
-            sarif_file: ${{ steps.imagescannp.outputs.sarif }}
-        
-        # - uses: anchore/scan-action/download-grype@v3
-        #   id: grype 
-        
-        # - run: |
-        #     grype ${{ secrets.DOCKER_REGISTRY }}/profesional-card -o json
-        #     grype ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest -o json
+            sarif_file: result1.sarif, result2.sarif
           
 
 
