@@ -316,7 +316,7 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v3
 
-        - name: Run Trivy vulnerability scanner
+        - name: Run Trivy vulnerability scanner for registry
           uses: aquasecurity/trivy-action@master
           with:
             image-ref: ${{ secrets.DOCKER_REGISTRY }}/profesional-card
@@ -326,10 +326,30 @@ jobs:
             TRIVY_USERNAME: ${{ secrets.DOCKER_USERNAME }}
             TRIVY_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
 
+        - name: Run Trivy vulnerability scanner in IaC mode
+          uses: aquasecurity/trivy-action@master
+          with:
+            scan-type: 'config'
+            hide-progress: false
+            format: 'sarif'
+            output: 'trivy-results-2.sarif'
+            exit-code: '1'
+            ignore-unfixed: true
+            severity: 'CRITICAL,HIGH'
+
+        - name: Run Trivy vulnerability scanner in repo mode
+          uses: aquasecurity/trivy-action@master
+          with:
+            scan-type: 'fs'
+            ignore-unfixed: true
+            format: 'sarif'
+            output: 'trivy-results-3.sarif'
+            severity: 'CRITICAL'
+
         - name: Upload Trivy scan results to GitHub Security tab
           uses: github/codeql-action/upload-sarif@v2
           with:
-            sarif_file: trivy-results.sarif
+            sarif_file: trivy-results-3.sarif
           
 
 
