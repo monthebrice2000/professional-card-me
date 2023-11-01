@@ -16,10 +16,6 @@ module.exports = withBundleAnalyzer({
   reactStrictMode: true,
 });
 
-const nextConfig = {
-  experimental: {
-      output: 'standalone',
-  }
+module.exports = {
+  output: 'standalone',
 }
-
-module.exports = nextConfig
