@@ -199,20 +199,24 @@ jobs:
           #   DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
           run: |
             results=$(docker pull ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest && docker images -q ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest)
-            echo $results
+            # echo $results
             if [[ -n $results ]]; then
               echo "images exist"
             else
               echo "Container doesn't exist"
-              # docker build -t ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest -f ./client/Dockerfile .
-              # docker build -t ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest -f ./nginx/Dockerfile .
-              # docker push ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest
-              # docker push ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest
+              docker build -t ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest -f ./client/Dockerfile .
+              docker build -t ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest -f ./nginx/Dockerfile .
+              docker push ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest
+              docker push ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest
             fi
             
     grype-scan:
       needs: docker
       runs-on: ubuntu-latest
+      permissions:
+        contents: read # for actions/checkout to fetch code
+        security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
+        actions: read
       steps:
         - uses: actions/checkout@v3
         
