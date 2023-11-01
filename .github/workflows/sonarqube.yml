@@ -1,29 +1,3 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-# This workflow helps you trigger a SonarQube analysis of your code and populates
-# GitHub Code Scanning alerts with the vulnerabilities found.
-# (this feature is available starting from SonarQube 9.7, Developer Edition and above)
-
-# 1. Make sure you add a valid GitHub configuration to your SonarQube (Administration > DevOps platforms > GitHub)
-
-# 2. Import your project on SonarQube
-#     * Add your repository as a new project by clicking "Create project" from your homepage.
-#
-# 3. Select GitHub Actions as your CI and follow the tutorial
-#     * a. Generate a new token and add it to your GitHub repository's secrets using the name SONAR_TOKEN
-#          (On SonarQube, click on your avatar on top-right > My account > Security or ask your administrator)
-#
-#     * b. Copy/paste your SonarQube host URL to your GitHub repository's secrets using the name SONAR_HOST_URL
-#
-#     * c. Copy/paste the project Key into the args parameter below
-#          (You'll find this information in SonarQube by following the tutorial or by clicking on Project Information at the top-right of your project's homepage)
-
-# Feel free to take a look at our documentation (https://docs.sonarqube.org/latest/analysis/github-integration/)
-# or reach out to our community forum if you need some help (https://community.sonarsource.com/c/sq/10)
-
 name: SonarQube analysis
 
 on:
@@ -38,164 +12,187 @@ permissions:
   contents: read
 
 jobs:
-  scan-secrets:
-    name: gitleaks
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # scan-secrets:
+  #   name: gitleaks
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
+  #     - uses: gitleaks/gitleaks-action@v2
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
-  TruffleHog:
-    runs-on: ubuntu-latest
-    needs: scan-secrets
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: TruffleHog OSS
-        uses: trufflesecurity/trufflehog@main
-        with:
-          path: ./
-          base: ${{ github.event.repository.default_branch }}
-          head: HEAD
-          # extra_args: --debug --only-verified
-  lint-docker:
-    # needs: TruffleHog
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3 
-      - uses: hadolint/hadolint-action@v3.1.0
-        with:
-          dockerfile: Dockerfile
-          format: sarif
-      - run: |
-          echo $HADOLINT_RESULTS
-  depchecktest:
-    needs: scan-secrets
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    name: depecheck_test
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      # - name: Build project with Maven
-      #  run: mvn clean install
-      - name: Depcheck
-        uses: dependency-check/Dependency-Check_Action@main
-        id: Depcheck
-        with:
-          project: 'professional-card-me'
-          path: '.'
-          format: 'HTML'
-          # out: 'reports' # this is the default, no need to specify unless you wish to override it
-          #args: >
-          #  --failOnCVSS 7
-          #  --enableRetired
-      - name: Upload Test results
-        uses: actions/upload-artifact@master
-        with:
-           name: Depcheck report
-           path: ${{github.workspace}}/reports
-      #     env-url: FOOBAR
-      #- name: Use URL for something
-      #  run: echo "${{ env.FOOBAR }}"
-  semgrep-ci:
-    needs: depchecktest
-    runs-on: ubuntu-latest
-    container:
-      # A Docker image with Semgrep installed. Do not change this.
-      image: returntocorp/semgrep
-    steps:
-    - uses: actions/checkout@master
-      with:
-        fetch-depth: 0
-    - run: semgrep ci
-      env:
-        SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+  # TruffleHog:
+  #   runs-on: ubuntu-latest
+  #   needs: scan-secrets
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
+  #     - name: TruffleHog OSS
+  #       uses: trufflesecurity/trufflehog@main
+  #       with:
+  #         path: ./
+  #         base: ${{ github.event.repository.default_branch }}
+  #         head: HEAD
+  #         # extra_args: --debug --only-verified
+  # lint-docker:
+  #   # needs: TruffleHog
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3 
+  #     - uses: hadolint/hadolint-action@v3.1.0
+  #       with:
+  #         dockerfile: Dockerfile
+  #         format: sarif
+  #     - run: |
+  #         echo $HADOLINT_RESULTS
+  # depchecktest:
+  #   needs: scan-secrets
+  #   permissions:
+  #     contents: write
+  #   runs-on: ubuntu-latest
+  #   name: depecheck_test
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #     # - name: Build project with Maven
+  #     #  run: mvn clean install
+  #     - name: Depcheck
+  #       uses: dependency-check/Dependency-Check_Action@main
+  #       id: Depcheck
+  #       with:
+  #         project: 'professional-card-me'
+  #         path: '.'
+  #         format: 'HTML'
+  #         # out: 'reports' # this is the default, no need to specify unless you wish to override it
+  #         #args: >
+  #         #  --failOnCVSS 7
+  #         #  --enableRetired
+  #     - name: Upload Test results
+  #       uses: actions/upload-artifact@master
+  #       with:
+  #          name: Depcheck report
+  #          path: ${{github.workspace}}/reports
+  #     #     env-url: FOOBAR
+  #     #- name: Use URL for something
+  #     #  run: echo "${{ env.FOOBAR }}"
+  # semgrep-ci:
+  #   needs: depchecktest
+  #   runs-on: ubuntu-latest
+  #   container:
+  #     # A Docker image with Semgrep installed. Do not change this.
+  #     image: returntocorp/semgrep
+  #   steps:
+  #   - uses: actions/checkout@master
+  #     with:
+  #       fetch-depth: 0
+  #   - run: semgrep ci
+  #     env:
+  #       SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
 
-  sonarqube:
-    needs: snyk
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
-      with:
-        fetch-depth: 0
-    # Setup java 17 to be default (sonar-scanner requirement as of 5.x)
-    - uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin' # See 'Supported distributions' for available options
-        java-version: '8'
-    # Setup sonar-scanner
-    - name: Setup SonarQube
-      uses: warchant/setup-sonar-scanner@v3
-    # Run sonar-scanner
-    - name: SonarQube Scan
-      run: sonar-scanner
-           -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
-           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-           -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-           -Dsonar.sources=$GITHUB_WORKSPACE
-            # Comma-separated paths to directories containing test source files.
-            #-Dsonar.tests= # optional. For more info about Code Coverage, please refer to https://docs.sonarcloud.io/enriching/test-coverage/overview/
-            # Adds more detail to both client and server-side analysis logs, activating DEBUG mode for the scanner, and adding client-side environment variables and system properties to the server-side log of analysis report processing.
-            #-Dsonar.verbose= # optional, default is false
-  snyk:
-    needs: semgrep-ci
-    permissions:
-      contents: read # for actions/checkout to fetch code
-      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
-      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Snyk CLI to check for security issues
-        # Snyk can be used to break the build when it detects security issues.
-        # In this case we want to upload the SAST issues to GitHub Code Scanning
-        uses: snyk/actions/node@806182742461562b67788a64410098c9d9b96adb
+  # sonarqube:
+  #   needs: snyk
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@master
+  #     with:
+  #       fetch-depth: 0
+  #   # Setup java 17 to be default (sonar-scanner requirement as of 5.x)
+  #   - uses: actions/setup-java@v3
+  #     with:
+  #       distribution: 'temurin' # See 'Supported distributions' for available options
+  #       java-version: '8'
+  #   # Setup sonar-scanner
+  #   - name: Setup SonarQube
+  #     uses: warchant/setup-sonar-scanner@v3
+  #   # Run sonar-scanner
+  #   - name: SonarQube Scan
+  #     run: sonar-scanner
+  #          -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
+  #          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+  #          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+  #          -Dsonar.sources=$GITHUB_WORKSPACE
+  #           # Comma-separated paths to directories containing test source files.
+  #           #-Dsonar.tests= # optional. For more info about Code Coverage, please refer to https://docs.sonarcloud.io/enriching/test-coverage/overview/
+  #           # Adds more detail to both client and server-side analysis logs, activating DEBUG mode for the scanner, and adding client-side environment variables and system properties to the server-side log of analysis report processing.
+  #           #-Dsonar.verbose= # optional, default is false
+  # snyk:
+  #   needs: semgrep-ci
+  #   permissions:
+  #     contents: read # for actions/checkout to fetch code
+  #     security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
+  #     actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Set up Snyk CLI to check for security issues
+  #       # Snyk can be used to break the build when it detects security issues.
+  #       # In this case we want to upload the SAST issues to GitHub Code Scanning
+  #       uses: snyk/actions/node@806182742461562b67788a64410098c9d9b96adb
 
-        # For Snyk Open Source you must first set up the development environment for your application's dependencies
-        # For example for Node
-        #- uses: actions/setup-node@v3
-        #  with:
-        #    node-version: 16
-        continue-on-error: true
-        env:
-          # This is where you will need to introduce the Snyk API token created with your Snyk account
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --sarif-file-output=snyk.sarif
+  #       # For Snyk Open Source you must first set up the development environment for your application's dependencies
+  #       # For example for Node
+  #       #- uses: actions/setup-node@v3
+  #       #  with:
+  #       #    node-version: 16
+  #       continue-on-error: true
+  #       env:
+  #         # This is where you will need to introduce the Snyk API token created with your Snyk account
+  #         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+  #       with:
+  #         args: --sarif-file-output=snyk.sarif
 
-        # Runs Snyk Code (SAST) analysis and uploads result into GitHub.
-        # Use || true to not fail the pipeline
-      # - name: Snyk Code test
-        # run: snyk code test --sarif > snyk-code.sarif # || true
+  #       # Runs Snyk Code (SAST) analysis and uploads result into GitHub.
+  #       # Use || true to not fail the pipeline
+  #     # - name: Snyk Code test
+  #       # run: snyk code test --sarif > snyk-code.sarif # || true
 
-        # Runs Snyk Open Source (SCA) analysis and uploads result to Snyk.
-      # - name: Snyk Open Source monitor
-      #  run: snyk monitor --all-projects
+  #       # Runs Snyk Open Source (SCA) analysis and uploads result to Snyk.
+  #     # - name: Snyk Open Source monitor
+  #     #  run: snyk monitor --all-projects
 
-        # Runs Snyk Infrastructure as Code (IaC) analysis and uploads result to Snyk.
-        # Use || true to not fail the pipeline.
-      # - name: Snyk IaC test and report
-      #   run: snyk iac test --report # || true
+  #       # Runs Snyk Infrastructure as Code (IaC) analysis and uploads result to Snyk.
+  #       # Use || true to not fail the pipeline.
+  #     # - name: Snyk IaC test and report
+  #     #   run: snyk iac test --report # || true
 
-        # Build the docker image for testing
-      # - name: Build a Docker image
-      #   run: docker build -t your/image-to-test .
-        # Runs Snyk Container (Container and SCA) analysis and uploads result to Snyk.
-      # - name: Snyk Container monitor
-      #   run: snyk container monitor your/image-to-test --file=Dockerfile
+  #       # Build the docker image for testing
+  #     # - name: Build a Docker image
+  #     #   run: docker build -t your/image-to-test .
+  #       # Runs Snyk Container (Container and SCA) analysis and uploads result to Snyk.
+  #     # - name: Snyk Container monitor
+  #     #   run: snyk container monitor your/image-to-test --file=Dockerfile
 
-        # Push the Snyk Code results into GitHub Code Scanning tab
-      - name: Upload result to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: snyk.sarif 
+  #       # Push the Snyk Code results into GitHub Code Scanning tab
+  #     - name: Upload result to GitHub Code Scanning
+  #       uses: github/codeql-action/upload-sarif@v2
+  #       with:
+  #         sarif_file: snyk.sarif
+    docker:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        
+        - name: Set up QEMU
+          uses: docker/setup-qemu-action@v3
+
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v3
+          
+        - name: Login to Docker Container Registry
+          uses: docker/login-action@v3
+          with:
+            registry: imagescanning.azurecr.io
+            username: ${{ secrets.DOCKER_USERNAME }}
+            password: ${{ secrets.DOCKER_TOKEN }}
+        
+        - name: Build and push
+          run: |
+            docker build -t profesional-card:latest -f ./nginx/Dockerfile .
+            docker image ls -a
+          
 
 
