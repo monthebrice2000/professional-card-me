@@ -176,6 +176,7 @@ jobs:
   #       uses: github/codeql-action/upload-sarif@v2
   #       with:
   #         sarif_file: snyk.sarif
+  
     docker:
       runs-on: ubuntu-latest
       steps:
@@ -210,146 +211,146 @@ jobs:
               docker push ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest
             fi
             
-    grype-scan:
-      needs: docker
-      runs-on: ubuntu-latest
-      permissions:
-        contents: read # for actions/checkout to fetch code
-        security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
-        actions: read
-      steps:
-        - uses: actions/checkout@v3
+    # grype-scan:
+    #   needs: docker
+    #   runs-on: ubuntu-latest
+    #   permissions:
+    #     contents: read # for actions/checkout to fetch code
+    #     security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
+    #     actions: read
+    #   steps:
+    #     - uses: actions/checkout@v3
         
-        - name: Scan current project
-          id: scan
-          uses: anchore/scan-action@v2
-          with:
-            path: "./"
-            fail-build: false
-            acs-report-enable: true
+    #     - name: Scan current project
+    #       id: scan
+    #       uses: anchore/scan-action@v2
+    #       with:
+    #         path: "./"
+    #         fail-build: false
+    #         acs-report-enable: true
 
-        - name: upload Anchore scan SARIF report
-          uses: github/codeql-action/upload-sarif@v2
-          with:
-            sarif_file: ${{ steps.scan.outputs.sarif }}
+    #     - name: upload Anchore scan SARIF report
+    #       uses: github/codeql-action/upload-sarif@v2
+    #       with:
+    #         sarif_file: ${{ steps.scan.outputs.sarif }}
         
-        - name: Set up QEMU
-          uses: docker/setup-qemu-action@v3
+    #     - name: Set up QEMU
+    #       uses: docker/setup-qemu-action@v3
 
-        - name: Set up Docker Buildx
-          uses: docker/setup-buildx-action@v3
+    #     - name: Set up Docker Buildx
+    #       uses: docker/setup-buildx-action@v3
           
-        - name: Login to Docker Container Registry
-          uses: docker/login-action@v3
-          with:
-            registry: ${{ secrets.DOCKER_REGISTRY }}
-            username: ${{ secrets.DOCKER_USERNAME }}
-            password: ${{ secrets.DOCKER_TOKEN }}
+    #     - name: Login to Docker Container Registry
+    #       uses: docker/login-action@v3
+    #       with:
+    #         registry: ${{ secrets.DOCKER_REGISTRY }}
+    #         username: ${{ secrets.DOCKER_USERNAME }}
+    #         password: ${{ secrets.DOCKER_TOKEN }}
         
-        - name: Pull images
-          run: |
-            docker pull ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest
-            docker pull ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest
+    #     - name: Pull images
+    #       run: |
+    #         docker pull ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest
+    #         docker pull ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest
         
-        # - name: Scan profesional-card image 
-        #   uses: anchore/scan-action@v3
-        #   id: imagescanpc
-        #   with:
-        #     image: ${{ secrets.DOCKER_REGISTRY }}/profesional-card
-        #     registry-username: ${{ secrets.DOCKER_USERNAME }}
-        #     registry-password: ${{ secrets.DOCKER_PASSWORD }}
-        #     acs-report-enable: "true"
-        #     fail-build: false
+    #     # - name: Scan profesional-card image 
+    #     #   uses: anchore/scan-action@v3
+    #     #   id: imagescanpc
+    #     #   with:
+    #     #     image: ${{ secrets.DOCKER_REGISTRY }}/profesional-card
+    #     #     registry-username: ${{ secrets.DOCKER_USERNAME }}
+    #     #     registry-password: ${{ secrets.DOCKER_PASSWORD }}
+    #     #     acs-report-enable: "true"
+    #     #     fail-build: false
         
-        # - name: upload Anchore Image scan SARIF report
-        #   uses: github/codeql-action/upload-sarif@v2
-        #   with:
-        #     sarif_file: ${{ steps.imagescanpc.outputs.sarif }}
+    #     # - name: upload Anchore Image scan SARIF report
+    #     #   uses: github/codeql-action/upload-sarif@v2
+    #     #   with:
+    #     #     sarif_file: ${{ steps.imagescanpc.outputs.sarif }}
         
-        # - name: Scan nginx-proxy image 
-        #   uses: anchore/scan-action@v3
-        #   id: imagescannp
-        #   with:
-        #     image: ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy
-        #     registry-username: ${{ secrets.DOCKER_USERNAME }}
-        #     registry-password: ${{ secrets.DOCKER_PASSWORD }}
-        #     acs-report-enable: "true"
-        #     fail-build: false
+    #     # - name: Scan nginx-proxy image 
+    #     #   uses: anchore/scan-action@v3
+    #     #   id: imagescannp
+    #     #   with:
+    #     #     image: ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy
+    #     #     registry-username: ${{ secrets.DOCKER_USERNAME }}
+    #     #     registry-password: ${{ secrets.DOCKER_PASSWORD }}
+    #     #     acs-report-enable: "true"
+    #     #     fail-build: false
         
-        # - name: upload Anchore nginx-proxy Image scan SARIF report
-        #   uses: github/codeql-action/upload-sarif@v2
-        #   with:
-        #     sarif_file: ${{ steps.imagescannp.outputs.sarif }}
+    #     # - name: upload Anchore nginx-proxy Image scan SARIF report
+    #     #   uses: github/codeql-action/upload-sarif@v2
+    #     #   with:
+    #     #     sarif_file: ${{ steps.imagescannp.outputs.sarif }}
         
-        - uses: anchore/scan-action/download-grype@v3
-          id: grype 
+    #     - uses: anchore/scan-action/download-grype@v3
+    #       id: grype 
         
-        - name: Scan nginx-proxy image
-          run: |
-            grype ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest -o sarif > ./result.sarif
-            cat result.sarif
+    #     - name: Scan nginx-proxy image
+    #       run: |
+    #         grype ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest -o sarif > ./result.sarif
+    #         cat result.sarif
 
-        # - name: upload Anchore nginx-proxy Image scan SARIF report
-        #   uses: github/codeql-action/upload-sarif@v2
-        #   with:
-        #     sarif_file: result2.sarif
+    #     # - name: upload Anchore nginx-proxy Image scan SARIF report
+    #     #   uses: github/codeql-action/upload-sarif@v2
+    #     #   with:
+    #     #     sarif_file: result2.sarif
         
-        - name: Scan profesional card image
-          run: |
-            grype ${{ secrets.DOCKER_REGISTRY }}/profesional-card -o sarif > ./result.sarif
-            cat result.sarif
+    #     - name: Scan profesional card image
+    #       run: |
+    #         grype ${{ secrets.DOCKER_REGISTRY }}/profesional-card -o sarif > ./result.sarif
+    #         cat result.sarif
         
-        - name: upload Anchore profesional card Image scan SARIF report
-          uses: github/codeql-action/upload-sarif@v2
-          with:
-            sarif_file: result.sarif
+    #     - name: upload Anchore profesional card Image scan SARIF report
+    #       uses: github/codeql-action/upload-sarif@v2
+    #       with:
+    #         sarif_file: result.sarif
 
-    trivy-scan:
-      needs: docker
-      name: trivy-scan
-      runs-on: ubuntu-20.04
-      permissions:
-        contents: read # for actions/checkout to fetch code
-        security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
-        actions: read
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v3
+    # trivy-scan:
+    #   needs: docker
+    #   name: trivy-scan
+    #   runs-on: ubuntu-20.04
+    #   permissions:
+    #     contents: read # for actions/checkout to fetch code
+    #     security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
+    #     actions: read
+    #   steps:
+    #     - name: Checkout code
+    #       uses: actions/checkout@v3
 
-        - name: Run Trivy vulnerability scanner for registry
-          uses: aquasecurity/trivy-action@master
-          with:
-            image-ref: ${{ secrets.DOCKER_REGISTRY }}/profesional-card
-            format: 'sarif'
-            output: 'trivy-results.sarif'
-          env:
-            TRIVY_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-            TRIVY_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
+    #     - name: Run Trivy vulnerability scanner for registry
+    #       uses: aquasecurity/trivy-action@master
+    #       with:
+    #         image-ref: ${{ secrets.DOCKER_REGISTRY }}/profesional-card
+    #         format: 'sarif'
+    #         output: 'trivy-results.sarif'
+    #       env:
+    #         TRIVY_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+    #         TRIVY_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
 
-        - name: Run Trivy vulnerability scanner in IaC mode
-          uses: aquasecurity/trivy-action@master
-          with:
-            scan-type: 'config'
-            hide-progress: false
-            format: 'sarif'
-            output: 'trivy-results-2.sarif'
-            exit-code: '1'
-            ignore-unfixed: true
-            severity: 'CRITICAL,HIGH'
+    #     - name: Run Trivy vulnerability scanner in IaC mode
+    #       uses: aquasecurity/trivy-action@master
+    #       with:
+    #         scan-type: 'config'
+    #         hide-progress: false
+    #         format: 'sarif'
+    #         output: 'trivy-results-2.sarif'
+    #         exit-code: '1'
+    #         ignore-unfixed: true
+    #         severity: 'CRITICAL,HIGH'
 
-        - name: Run Trivy vulnerability scanner in repo mode
-          uses: aquasecurity/trivy-action@master
-          with:
-            scan-type: 'fs'
-            ignore-unfixed: true
-            format: 'sarif'
-            output: 'trivy-results-3.sarif'
-            severity: 'CRITICAL'
+    #     - name: Run Trivy vulnerability scanner in repo mode
+    #       uses: aquasecurity/trivy-action@master
+    #       with:
+    #         scan-type: 'fs'
+    #         ignore-unfixed: true
+    #         format: 'sarif'
+    #         output: 'trivy-results-3.sarif'
+    #         severity: 'CRITICAL'
 
-        - name: Upload Trivy scan results to GitHub Security tab
-          uses: github/codeql-action/upload-sarif@v2
-          with:
-            sarif_file: trivy-results-3.sarif
+    #     - name: Upload Trivy scan results to GitHub Security tab
+    #       uses: github/codeql-action/upload-sarif@v2
+    #       with:
+    #         sarif_file: trivy-results-3.sarif
           
 
 
