@@ -1,6 +1,7 @@
 .git/
 .github/
 .husky/
+.next/
 
 .env*
 Dockerfile

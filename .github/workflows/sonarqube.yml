@@ -191,7 +191,7 @@ jobs:
         
         - name: Build and push
           run: |
-            docker build -t profesional-card:latest -f ./nginx/Dockerfile .
+            docker build -t profesional-card:latest -f ./client/Dockerfile .
             docker image ls -a
           
 
