@@ -296,7 +296,7 @@ jobs:
         
         - name: Scan profesional card image
           run: |
-            grype ${{ secrets.DOCKER_REGISTRY }}/profesional-card -o sarif > ./result.sarif
+            grype ${{ secrets.DOCKER_REGISTRY }}/profesional-card -o sarif >> ./result.sarif
             cat result.sarif
         
         - name: upload Anchore profesional card Image scan SARIF report
