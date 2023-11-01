@@ -253,7 +253,7 @@ jobs:
         
         - name: Scan profesional-card image 
           uses: anchore/scan-action@v3
-          id: imagescan1
+          id: imagescanpc
           with:
             image: ${{ secrets.DOCKER_REGISTRY }}/profesional-card
             registry-username: ${{ secrets.DOCKER_USERNAME }}
@@ -264,11 +264,11 @@ jobs:
         - name: upload Anchore Image scan SARIF report
           uses: github/codeql-action/upload-sarif@v2
           with:
-            sarif_file: ${{ steps.imagescan1.outputs.sarif }}
+            sarif_file: ${{ steps.imagescanpc.outputs.sarif }}
         
-        - name: Scan profesional-card image 
+        - name: Scan nginx-proxy image 
           uses: anchore/scan-action@v3
-          id: imagescan2
+          id: imagescannp
           with:
             image: ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy
             registry-username: ${{ secrets.DOCKER_USERNAME }}
@@ -276,10 +276,10 @@ jobs:
             acs-report-enable: "true"
             fail-build: false
         
-        - name: upload Anchore Image scan SARIF report
+        - name: upload Anchore nginx-proxy Image scan SARIF report
           uses: github/codeql-action/upload-sarif@v2
           with:
-            sarif_file: ${{ steps.imagescan2.outputs.sarif }}
+            sarif_file: ${{ steps.imagescannp.outputs.sarif }}
         
         # - uses: anchore/scan-action/download-grype@v3
         #   id: grype 

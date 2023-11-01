@@ -1,4 +1,5 @@
 docker-exists-image.sh
+.grype/
 
 # Logs
 logs
