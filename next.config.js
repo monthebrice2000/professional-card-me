@@ -18,7 +18,7 @@ module.exports = withBundleAnalyzer({
 
 const nextConfig = {
   experimental: {
-      outputStandalone: true,
+      output: 'standalone',
   }
 }
 
