@@ -284,16 +284,23 @@ jobs:
         - uses: anchore/scan-action/download-grype@v3
           id: grype 
         
-        - run: |
-            grype ${{ secrets.DOCKER_REGISTRY }}/profesional-card -o sarif > ./result1.sarif
+        - name: Scan nginx-proxy image
+          run: |
             grype ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest -o sarif > ./result2.sarif
-            echo +++++++++++++++++++++++++
-            ls
 
         - name: upload Anchore nginx-proxy Image scan SARIF report
           uses: github/codeql-action/upload-sarif@v2
           with:
-            sarif_file: result1.sarif, result2.sarif
+            sarif_file: result2.sarif
+        
+        - name: Scan profesional card image
+          run: |
+            grype ${{ secrets.DOCKER_REGISTRY }}/profesional-card -o sarif > ./result1.sarif
+        
+        - name: upload Anchore profesional card Image scan SARIF report
+          uses: github/codeql-action/upload-sarif@v2
+          with:
+            sarif_file: result1.sarif
           
 
 
