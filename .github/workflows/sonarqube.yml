@@ -296,13 +296,36 @@ jobs:
         
         - name: Scan profesional card image
           run: |
-            grype ${{ secrets.DOCKER_REGISTRY }}/profesional-card -o sarif >> ./result.sarif
+            grype ${{ secrets.DOCKER_REGISTRY }}/profesional-card -o sarif > ./result.sarif
             cat result.sarif
         
         - name: upload Anchore profesional card Image scan SARIF report
           uses: github/codeql-action/upload-sarif@v2
           with:
             sarif_file: result.sarif
+
+    trivy-scan:
+      needs: docker
+      name: trivy-scan
+      runs-on: ubuntu-20.04
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
+
+        - name: Run Trivy vulnerability scanner
+          uses: aquasecurity/trivy-action@master
+          with:
+            image-ref: ${{ secrets.DOCKER_REGISTRY }}/profesional-card
+            format: 'sarif'
+            output: 'trivy-results.sarif'
+          env:
+            TRIVY_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+            TRIVY_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+        - name: Upload Trivy scan results to GitHub Security tab
+          uses: github/codeql-action/upload-sarif@v2
+          with:
+            sarif_file: 'trivy-results.sarif'
           
 
 
