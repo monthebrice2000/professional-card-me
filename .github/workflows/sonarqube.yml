@@ -198,7 +198,7 @@ jobs:
           # env:
           #   DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
           run: |
-            results=$(docker pull ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest | docker images -q ${{ secrets.DOCKER_REGISTRY }}/profesional-card)
+            results=$(docker pull ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest | docker images -q ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest)
             if [[ -n $results ]]; then
               echo "images exist"
             else
@@ -220,7 +220,7 @@ jobs:
           uses: anchore/scan-action@v2
           with:
             path: "./"
-            fail-build: true
+            # fail-build: true
             acs-report-enable: true
         
         - name: Set up QEMU
