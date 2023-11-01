@@ -215,6 +215,14 @@ jobs:
       steps:
         - uses: actions/checkout@v3
         
+        - name: Scan current project
+          id: scan
+          uses: anchore/scan-action@v2
+          with:
+            path: "./"
+            fail-build: true
+            acs-report-enable: true
+        
         - name: Set up QEMU
           uses: docker/setup-qemu-action@v3
 
@@ -233,12 +241,38 @@ jobs:
             docker pull ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest
             docker pull ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest
         
-        - uses: anchore/scan-action/download-grype@v3
-          id: grype 
+        - name: Scan profesional-card image 
+          uses: anchore/scan-action@v3
+          id: imagescan1
+          with:
+            image: ${{ secrets.DOCKER_REGISTRY }}/profesional-card
+            acs-report-enable: "true"
+            fail-build: false
         
-        - run: |
-            grype ${{ secrets.DOCKER_REGISTRY }}/profesional-card -o json
-            grype ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest -o json
+        - name: upload Anchore Image scan SARIF report
+          uses: github/codeql-action/upload-sarif@v1
+          with:
+            sarif_file: ${{ steps.imagescan1.outputs.sarif }}
+        
+        - name: Scan profesional-card image 
+          uses: anchore/scan-action@v3
+          id: imagescan2
+          with:
+            image: ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy
+            acs-report-enable: "true"
+            fail-build: false
+        
+        - name: upload Anchore Image scan SARIF report
+          uses: github/codeql-action/upload-sarif@v1
+          with:
+            sarif_file: ${{ steps.imagescan2.outputs.sarif }}
+        
+        # - uses: anchore/scan-action/download-grype@v3
+        #   id: grype 
+        
+        # - run: |
+        #     grype ${{ secrets.DOCKER_REGISTRY }}/profesional-card -o json
+        #     grype ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest -o json
           
 
 
