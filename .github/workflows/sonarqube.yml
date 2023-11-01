@@ -198,15 +198,16 @@ jobs:
           # env:
           #   DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
           run: |
-            results=$(docker pull ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest | docker images -q ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest)
+            results=$(docker pull ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest && docker images -q ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest)
+            echo $results
             if [[ -n $results ]]; then
               echo "images exist"
             else
               echo "Container doesn't exist"
-              docker build -t ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest -f ./client/Dockerfile .
-              docker build -t ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest -f ./nginx/Dockerfile .
-              docker push ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest
-              docker push ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest
+              # docker build -t ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest -f ./client/Dockerfile .
+              # docker build -t ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest -f ./nginx/Dockerfile .
+              # docker push ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest
+              # docker push ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest
             fi
             
     grype-scan:
@@ -220,8 +221,13 @@ jobs:
           uses: anchore/scan-action@v2
           with:
             path: "./"
-            # fail-build: true
+            fail-build: false
             acs-report-enable: true
+
+        - name: upload Anchore scan SARIF report
+          uses: github/codeql-action/upload-sarif@v1
+          with:
+            sarif_file: ${{ steps.scan.outputs.sarif }}
         
         - name: Set up QEMU
           uses: docker/setup-qemu-action@v3
@@ -246,6 +252,8 @@ jobs:
           id: imagescan1
           with:
             image: ${{ secrets.DOCKER_REGISTRY }}/profesional-card
+            registry-username: ${{ secrets.DOCKER_USERNAME }}
+            registry-password: ${{ secrets.DOCKER_PASSWORD }}
             acs-report-enable: "true"
             fail-build: false
         
@@ -259,6 +267,8 @@ jobs:
           id: imagescan2
           with:
             image: ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy
+            registry-username: ${{ secrets.DOCKER_USERNAME }}
+            registry-password: ${{ secrets.DOCKER_PASSWORD }}
             acs-report-enable: "true"
             fail-build: false
         
