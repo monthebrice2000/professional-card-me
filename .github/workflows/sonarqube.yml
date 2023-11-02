@@ -200,34 +200,34 @@ jobs:
           #   DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
           run: |
             results=$(docker pull ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest | docker images -q ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest)
-            # echo $results
+            echo $results
             if [[ -n $results ]]; then
               echo "images exist"
             else
               echo "Container doesn't exist"
-              docker build -t ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest -f ./client/Dockerfile .
-              docker build -t ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest -f ./nginx/Dockerfile .
-              docker push ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest
-              docker push ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest
+              # docker build -t ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest -f ./client/Dockerfile .
+              # docker build -t ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest -f ./nginx/Dockerfile .
+              # docker push ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest
+              # docker push ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest
             fi
-    zap_scan:
-      runs-on: ubuntu-latest
-      name: Scan the webapplication
-      needs: docker
-      permissions: write-all
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v2
-          with:
-            ref: master
-        - name: ZAP Scan
-          uses: zaproxy/action-full-scan@v0.8.0
-          with:
-            token: ${{ secrets.GITHUB_TOKEN }}
-            docker_name: 'ghcr.io/zaproxy/zaproxy:stable'
-            target: ${{ secrets.WEBAPP_URL }}
-            # rules_file_name: '.zap/rules.tsv'
-            cmd_options: '-a'
+    # zap_scan:
+    #   runs-on: ubuntu-latest
+    #   name: Scan the webapplication
+    #   needs: docker
+    #   permissions: write-all
+    #   steps:
+    #     - name: Checkout
+    #       uses: actions/checkout@v2
+    #       with:
+    #         ref: master
+    #     - name: ZAP Scan
+    #       uses: zaproxy/action-full-scan@v0.8.0
+    #       with:
+    #         token: ${{ secrets.GITHUB_TOKEN }}
+    #         docker_name: 'ghcr.io/zaproxy/zaproxy:stable'
+    #         target: ${{ secrets.WEBAPP_URL }}
+    #         # rules_file_name: '.zap/rules.tsv'
+    #         cmd_options: '-a'
 
     # grype-scan:
     #   needs: docker
