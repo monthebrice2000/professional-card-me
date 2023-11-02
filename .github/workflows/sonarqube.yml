@@ -214,6 +214,7 @@ jobs:
       runs-on: ubuntu-latest
       name: Scan the webapplication
       needs: docker
+      permissions: write-all
       steps:
         - name: Checkout
           uses: actions/checkout@v2
