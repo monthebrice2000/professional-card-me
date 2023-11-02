@@ -1,0 +1,68 @@
+apiVersion: networking.k8s.io/v1
+# UPDATE API
+kind: Ingress
+metadata:
+  name: ingress-service
+  annotations:
+    # kubernetes.io/ingress.class: 'nginx'
+    # spec.ingressClassName: 'nginx'
+    nginx.ingress.kubernetes.io/use-regex: 'true'
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    cert-manager.io/cluster-issuer: letsencrypt
+    # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    # kubernetes.io/tls-acme: 'true'
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+      - www.47fa3b52824e4cffbd6f.westeurope.aksapp.io
+      secretName: tls-secret
+  rules:
+    - host: www.47fa3b52824e4cffbd6f.westeurope.aksapp.io
+      http:
+        paths:
+          - path: /?(.*)
+            # UPDATE PATH
+            pathType: Prefix
+            # ADD PATHTYPE
+            backend:
+              service:
+                # UPDATE SERVICE FIELDS
+                name: client-cluster-ip-service
+                port:
+                  number: 3000
+          - path: /api/?(.*)
+            # UPDATE PATH
+            pathType: Prefix
+            # ADD PATHTYPE
+            backend:
+              service:
+                # UPDATE SERVICE FIELDS
+                name: server-cluster-ip-service
+                port:
+                  number: 5000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-service-static
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /static/$2
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - www.47fa3b52824e4cffbd6f.westeurope.aksapp.io
+    secretName: tls-secret
+  rules:
+  - host: www.47fa3b52824e4cffbd6f.westeurope.aksapp.io #demoazure.westeurope.cloudapp.azure.com
+    http:
+      paths:
+      - path: /static(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: client-cluster-ip-service
+            port: 
+              number: 3000
