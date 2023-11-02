@@ -200,24 +200,52 @@ jobs:
           #   DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
           run: |
             results=$(docker pull ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest || docker images -q ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest)
-            echo $results
+            # echo $results
             if [[ -n $results ]]; then
               echo "images exist"
             else
               echo "Container doesn't exist"
-              # docker build -t ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest -f ./client/Dockerfile .
-              # docker build -t ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest -f ./nginx/Dockerfile .
-              # docker push ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest
-              # docker push ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest
+              docker build -t ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest -f ./client/Dockerfile .
+              docker build -t ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest -f ./nginx/Dockerfile .
+              docker push ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest
+              docker push ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest
             fi
+    
+    nuclei-scan:
+      runs-on: ubuntu-latest
+      needs: docker
+      permissions:
+        issues: write
+      steps:
+        - uses: actions/checkout@v3
+
+        - name: Nuclei - Vulnerability Scan
+          uses: projectdiscovery/nuclei-action@main
+          with:
+            target: ${{ secrets.WEBAPP_URL }}
+            github-report: true
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+
+        - name: GitHub Workflow artifacts
+          uses: actions/upload-artifact@v2
+          with:
+            name: nuclei.log
+            path: nuclei.log
+
+        - name: GitHub Security Dashboard Alerts update
+          uses: github/codeql-action/upload-sarif@v2
+          with:
+            sarif_file: nuclei.sarif
+  
     # zap_scan:
     #   runs-on: ubuntu-latest
     #   name: Scan the webapplication
     #   needs: docker
-    #   permissions: write-all
+    #   permissions: 
+    #     issues: write
     #   steps:
     #     - name: Checkout
-    #       uses: actions/checkout@v2
+    #       uses: actions/checkout@v3
     #       with:
     #         ref: master
     #     - name: ZAP Scan
