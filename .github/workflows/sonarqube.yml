@@ -199,7 +199,8 @@ jobs:
           # env:
           #   DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
           run: |
-            results=$(docker pull ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest | docker images -q ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest)
+            docker pull ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest
+            results=$( docker images -q ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest)
             echo $results
             if [[ -n $results ]]; then
               echo "images exist"
