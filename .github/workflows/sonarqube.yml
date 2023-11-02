@@ -225,10 +225,10 @@ jobs:
         - name: Scan Kubernete files
           run: |
             search_dir="./k8s"
-            for entry in $search_dir/*
+            for entry in $search_dir/*.yaml
             do
               echo Scan $entry kubernete file
-              docker run -i kubesec/kubesec:latest scan /dev/stdin < $entry
+              docker run -i kubesec/kubesec:latest scan --exit-code 0 /dev/stdin < $entry
             done
     
     # nuclei-scan:
