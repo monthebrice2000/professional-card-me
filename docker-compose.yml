@@ -1,0 +1,12 @@
+version: "3.8"
+
+services: 
+  nginx:
+    image: imagescanning.azurecr.io/nginx-proxy:latest
+    ports: 
+      - 80:80
+    restart: always
+    depends_on:
+      - client
+  client:
+    image: imagescanning.azurecr.io/profesional-card:latest

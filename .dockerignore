@@ -2,6 +2,8 @@
 .github/
 .husky/
 .next/
+docker-compose.yml
+httpfuzz
 
 .env*
 Dockerfile
