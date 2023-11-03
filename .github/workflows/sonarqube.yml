@@ -235,9 +235,9 @@ jobs:
           run: |
             SHA=$(git rev-parse --short HEAD)
 
-            echo $COSIGN_KEY > openssl.key
-            echo $COSIGN_PUB > openssl.pub
-            
+            echo $COSIGN_KEY > cosignp.key
+            echo $COSIGN_PUB > cosignp.pub
+
             # docker load -i ./app.tar
             # while read REPOSITORY TAG IMAGE_ID
             # do
@@ -249,9 +249,10 @@ jobs:
 
             # cosign generate profesional-card:$SHA > payload_pc.json
             cosign generate ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA > payload_np.json
-
+            echo ++++++++
+            ls -lt
             # openssl dgst -sha256 -sign openssl.key -out payload_pc.sig payload_pc.json
-            openssl dgst -sha256 -sign openssl.key -out payload_np.sig payload_np.json
+            openssl dgst -sha256 -sign cosignp.key -out payload_np.sig payload_np.json
 
             # cat payload_pc.sig | base64 > payloadbase64_pc.sig
             cat payload_np.sig | base64 > payloadbase64_np.sig
@@ -261,7 +262,7 @@ jobs:
             cosign attach signature --payload payload_np.json --signature payloadbase64_np.sig ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA
 
             # cosign verify --key openssl.pub --insecure-ignore-tlog profesional-card:$SHA
-            cosign verify --key openssl.pub --insecure-ignore-tlog ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA
+            cosign verify --key cosignp.pub --insecure-ignore-tlog ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA
     
     # kubesec-scan:
     #   runs-on: ubuntu-latest
