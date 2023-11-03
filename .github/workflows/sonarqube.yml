@@ -190,6 +190,8 @@ jobs:
 
         - name: Install Cosign
           uses: sigstore/cosign-installer@v3.1.1
+          with:
+            cosign-release: 'v2.1.1'
         
         - name: Set up QEMU
           uses: docker/setup-qemu-action@v3
@@ -239,16 +241,56 @@ jobs:
 
         - name: Sign Container image
           env:
-            COSIGN_KEY: ${{ secrets.COSIGN_KEY }}
-            # COSIGN_PUB: ${{ secrets.COSIGN_PUB }}
+            # COSIGN_KEY: ${{ secrets.COSIGN_KEY }}
+            COSIGN_PUB: ${{ secrets.COSIGN_PUB }}
             # COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_KEY }}
-            # COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+            COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
           run: |
             SHA=$(git rev-parse --short HEAD)
 
+            # echo $COSIGN_KEY > cosignpbase64.key
+            # echo $COSIGN_PUB > cosignpbase64.pub
+
+            # base64 -di cosignpbase64.key > cosignp.key
+            # base64 -di cosignpbase64.pub > cosignp.pub
+
+            # echo $COSIGN_KEY > cosignp.key
+            # echo $COSIGN_PUB > cosignp.pub
+
+            echo "${{ secrets.COSIGN_KEY }}" > cosign.key
+
+            # docker load -i ./app.tar
+            # while read REPOSITORY TAG IMAGE_ID
+            # do
+            #   echo "== Tagging $REPOSITORY $TAG $IMAGE_ID =="
+            #   docker tag "$IMAGE_ID" "$REPOSITORY:$TAG"
+            # done < mydockersimages.list
+
+            # docker images ls --filter=reference="*$SHA*"
+
+            # cosign generate profesional-card:$SHA > payload_pc.json
+            # cosign generate ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA > payload_np.json
+            # openssl dgst -sha256 -sign openssl.key -out payload_pc.sig payload_pc.json
+            #openssl dgst -sha256 -sign cosignp.key -out payload_np.sig payload_np.json
+
+            # cat payload_pc.sig | base64 > payloadbase64_pc.sig
+            # cat payload_np.sig | base64 > payloadbase64_np.sig
+
+            # cosign sign --key cosign.key $IMAGE
+            # cosign attach signature --payload payload_pc.json --signature payloadbase64_pc.sig profesional-card:$SHA
+            # cosign attach signature --payload payload_np.json --signature payloadbase64_np.sig ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA
+
+            # cosign sign --yes --key env://$COSIGN_PRIVATE_KEY ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy@${{ steps.crane.outputs.DIGEST }}
+            cosign sign --yes --key cosign.key \
+              ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA
             
-            cosign sign --yes ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA || command
-            
+            # @${{ steps.crane.outputs.DIGEST }}
+
+            # cosign verify --key openssl.pub --insecure-ignore-tlog profesional-card:$SHA
+            # cosign verify --key cosignp.pub --insecure-ignore-tlog ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA
+
+            # cosign verify --key cosignp.pub ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA
+            # cosign verify ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA
     
     # kubesec-scan:
     #   runs-on: ubuntu-latest
