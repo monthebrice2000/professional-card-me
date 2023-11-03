@@ -211,8 +211,8 @@ jobs:
             #   docker push ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest
             # fi
             SHA=$(git rev-parse --short HEAD)
-            docker build -t --cache-from=profesional-card profesional-card:$SHA -f ./client/Dockerfile .
-            docker build -t --cache-from=nginx-proxy nginx-proxy:$SHA -f ./nginx/Dockerfile .
+            docker build -t profesional-card:$SHA -f ./client/Dockerfile .
+            docker build -t nginx-proxy:$SHA -f ./nginx/Dockerfile .
             docker save $(docker images -q) -o ./app.tar
         
         - name: Install Cosign
