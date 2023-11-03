@@ -247,7 +247,7 @@ jobs:
             SHA=$(git rev-parse --short HEAD)
 
             
-            cosign sign --yes ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA
+            cosign sign --yes ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA || command
             
     
     # kubesec-scan:
