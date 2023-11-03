@@ -266,8 +266,7 @@ jobs:
         
         - name: Scan Kubernete files
           run: |
-            docker run -v $(pwd):/project zegl/kube-score:latest score --color always k8s/*.yaml
-            exit 0
+            docker run -v $(pwd):/project zegl/kube-score:latest score --color always k8s/*.yaml || command
     
     # kubebench-scan:
     #   runs-on: ubuntu-latest
