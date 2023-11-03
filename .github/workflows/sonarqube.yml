@@ -240,9 +240,9 @@ jobs:
         - name: Sign Container image
           env:
             COSIGN_KEY: ${{ secrets.COSIGN_KEY }}
-            COSIGN_PUB: ${{ secrets.COSIGN_PUB }}
-            COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_KEY }}
-            COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+            # COSIGN_PUB: ${{ secrets.COSIGN_PUB }}
+            # COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_KEY }}
+            # COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
           run: |
             SHA=$(git rev-parse --short HEAD)
 
