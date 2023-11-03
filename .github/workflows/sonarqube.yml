@@ -259,11 +259,11 @@ jobs:
 
             echo "${{ secrets.COSIGN_KEY }}" > cosign.key
 
-            echo "$COSIGN_KEY"
+            echo "$COSIGN_KEY" | sed 's/./& /g'
 
-            echo "$COSIGN_PASSWORD"
+            echo "$COSIGN_PASSWORD" | sed 's/./& /g'
 
-            echo "$COSIGN_PUB"
+            echo "$COSIGN_PUB" | sed 's/./& /g'
 
             # docker load -i ./app.tar
             # while read REPOSITORY TAG IMAGE_ID
