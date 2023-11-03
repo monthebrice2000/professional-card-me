@@ -211,9 +211,10 @@ jobs:
             #   docker push ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest
             # fi
             SHA=$(git rev-parse --short HEAD)
-            docker build -t profesional-card:$SHA -f ./client/Dockerfile .
+            # docker build -t profesional-card:$SHA -f ./client/Dockerfile .
             docker build -t nginx-proxy:$SHA -f ./nginx/Dockerfile .
-            docker save $(docker images -q) -o ./app.tar
+            docker images ls --filter=reference="*$SHA*"
+            docker save $(docker images ls --filter=reference="*$SHA*" ) -o ./app.tar
         
         - name: Install Cosign
           uses: sigstore/cosign-installer@main
@@ -223,7 +224,7 @@ jobs:
             SHA=$(git rev-parse HEAD)
             docker load -i ./app.tar
 
-            cosign generate profesional-card:$SHA > payload_pc.json
+            # cosign generate profesional-card:$SHA > payload_pc.json
             cosign generate nginx-proxy:$SHA > payload_np.json
 
             echo ${{ secrets.COSIGN_KEY }} > openssl.key
