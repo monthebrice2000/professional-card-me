@@ -222,7 +222,7 @@ jobs:
         
         - name: Sign Container image
           run: |
-            SHA=$(git rev-parse HEAD)
+            SHA=$(git rev-parse --short HEAD)
             docker load -i ./app.tar
             while read REPOSITORY TAG IMAGE_ID
             do
@@ -230,6 +230,8 @@ jobs:
               docker tag "$IMAGE_ID" "$REPOSITORY:$TAG"
             done < mydockersimages.list
 
+            docker images ls --filter=reference="*$SHA*"
+            
             # cosign generate profesional-card:$SHA > payload_pc.json
             cosign generate nginx-proxy:$SHA > payload_np.json
 
