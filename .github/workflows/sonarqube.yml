@@ -219,7 +219,7 @@ jobs:
             # fi
             SHA=$(git rev-parse --short HEAD)
             # docker build -t profesional-card:$SHA -f ./client/Dockerfile .
-            docker build -t nginx-proxy:$SHA -f ./nginx/Dockerfile .
+            docker build -t ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA -f ./nginx/Dockerfile .
             docker push ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA
             # docker save $(docker images ls --filter=reference="*$SHA*" -q) -o ./app.tar
             # docker images | sed '1d' | awk '{print $1 " " $2 " " $3}' > mydockersimages.list
