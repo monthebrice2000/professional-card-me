@@ -234,6 +234,10 @@ jobs:
             COSIGN_PUB: ${{ secrets.COSIGN_PUB }}
           run: |
             SHA=$(git rev-parse --short HEAD)
+
+            echo $COSIGN_KEY > openssl.key
+            echo $COSIGN_PUB > openssl.pub
+            
             # docker load -i ./app.tar
             # while read REPOSITORY TAG IMAGE_ID
             # do
@@ -245,9 +249,6 @@ jobs:
 
             # cosign generate profesional-card:$SHA > payload_pc.json
             cosign generate ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA > payload_np.json
-
-            echo $COSIGN_KEY > openssl.key
-            echo $COSIGN_PUB > openssl.pub
 
             # openssl dgst -sha256 -sign openssl.key -out payload_pc.sig payload_pc.json
             openssl dgst -sha256 -sign openssl.key -out payload_np.sig payload_np.json
