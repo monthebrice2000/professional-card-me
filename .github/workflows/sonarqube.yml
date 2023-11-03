@@ -221,20 +221,20 @@ jobs:
             # docker build -t profesional-card:$SHA -f ./client/Dockerfile .
             docker build -t ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA -f ./nginx/Dockerfile .
             docker push ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA
-            # docker save $(docker images ls --filter=reference="*$SHA*" -q) -o ./app.tar
-            # docker images | sed '1d' | awk '{print $1 " " $2 " " $3}' > mydockersimages.list
+            docker save $(docker images ls --filter=reference="*$SHA*" -q) -o ./app.tar
+            docker images | sed '1d' | awk '{print $1 " " $2 " " $3}' > mydockersimages.list
         
         - name: Sign Container image
           run: |
             SHA=$(git rev-parse --short HEAD)
-            # docker load -i ./app.tar
-            # while read REPOSITORY TAG IMAGE_ID
-            # do
-            #   echo "== Tagging $REPOSITORY $TAG $IMAGE_ID =="
-            #   docker tag "$IMAGE_ID" "$REPOSITORY:$TAG"
-            # done < mydockersimages.list
+            docker load -i ./app.tar
+            while read REPOSITORY TAG IMAGE_ID
+            do
+              echo "== Tagging $REPOSITORY $TAG $IMAGE_ID =="
+              docker tag "$IMAGE_ID" "$REPOSITORY:$TAG"
+            done < mydockersimages.list
 
-            # docker images ls --filter=reference="*$SHA*"
+            docker images ls --filter=reference="*$SHA*"
 
             # cosign generate profesional-card:$SHA > payload_pc.json
             cosign generate ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA > payload_np.json
