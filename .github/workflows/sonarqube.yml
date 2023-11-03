@@ -243,11 +243,13 @@ jobs:
             echo ${{ secrets.COSIGN_KEY }} > openssl.key
             echo ${{ secrets.COSIGN_PUB }} > openssl.pub
 
-            cosign --help
+            ls
+            
+            # cosign --help
             docker pull ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA
 
             # cosign generate profesional-card:$SHA > payload_pc.json
-            cosign generate ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA > payload_np.json
+            # cosign generate ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA > payload_np.json
 
             # echo ${{ secrets.COSIGN_KEY }} > openssl.key
             # echo ${{ secrets.COSIGN_PUB }} > openssl.pub
