@@ -229,18 +229,23 @@ jobs:
             
         
         - name: Sign Container image
+          env:
+            COSIGN_KEY: ${{ secrets.COSIGN_KEY }}
+            CONSIGN_PUB: ${{ secrets.COSIGN_PUB }}
           run: |
             echo $SHA
             SHA=$(git rev-parse --short HEAD)
             echo $SHA
             echo ++++++++++++
 
-            echo ${{ secrets.COSIGN_KEY }} > openssl.key
-            echo ${{ secrets.COSIGN_PUB }} > openssl.pub
+            
 
             ls
 
             cosign --version
+
+            echo "$COSIGN_KEY" > openssl.key
+            echo "$COSIGN_PUB" > openssl.pub
     
     # kubesec-scan:
     #   runs-on: ubuntu-latest
