@@ -282,7 +282,7 @@ jobs:
 
             # cosign sign --yes --key env://$COSIGN_PRIVATE_KEY ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy@${{ steps.crane.outputs.DIGEST }}
 
-            cosign sign --yes --key env://$COSIGN_PRIVATE_KEY \
+            cosign sign --yes --key env://COSIGN_PRIVATE_KEY \
               ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA
             
             # @${{ steps.crane.outputs.DIGEST }}
