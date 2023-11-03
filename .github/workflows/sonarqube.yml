@@ -243,7 +243,7 @@ jobs:
           env:
             # COSIGN_KEY: ${{ secrets.COSIGN_KEY }}
             COSIGN_PUB: ${{ secrets.COSIGN_PUB }}
-            # COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_KEY }}
+            COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_KEY }}
             COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
           run: |
             SHA=$(git rev-parse --short HEAD)
@@ -281,7 +281,10 @@ jobs:
             # cosign attach signature --payload payload_np.json --signature payloadbase64_np.sig ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA
 
             # cosign sign --yes --key env://$COSIGN_PRIVATE_KEY ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy@${{ steps.crane.outputs.DIGEST }}
-            cosign sign --yes --key cosign.key \
+
+            cat cosign.key
+
+            cosign sign --yes --key env://$COSIGN_PRIVATE_KEY \
               ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA
             
             # @${{ steps.crane.outputs.DIGEST }}
