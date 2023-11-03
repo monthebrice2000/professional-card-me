@@ -215,6 +215,7 @@ jobs:
             docker build -t nginx-proxy:$SHA -f ./nginx/Dockerfile .
             docker images ls --filter=reference="*$SHA*"
             docker save $(docker images ls --filter=reference="*$SHA*" -q) -o ./app.tar
+            docker images | sed '1d' | awk '{print $1 " " $2 " " $3}' > mydockersimages.list
         
         - name: Install Cosign
           uses: sigstore/cosign-installer@main
@@ -223,6 +224,11 @@ jobs:
           run: |
             SHA=$(git rev-parse HEAD)
             docker load -i ./app.tar
+            while read REPOSITORY TAG IMAGE_ID
+            do
+              echo "== Tagging $REPOSITORY $TAG $IMAGE_ID =="
+              docker tag "$IMAGE_ID" "$REPOSITORY:$TAG"
+            done < mydockersimages.list
 
             # cosign generate profesional-card:$SHA > payload_pc.json
             cosign generate nginx-proxy:$SHA > payload_np.json
