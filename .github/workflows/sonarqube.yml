@@ -230,7 +230,9 @@ jobs:
         
         - name: Sign Container image
           run: |
+            echo $SHA
             SHA=$(git rev-parse --short HEAD)
+            echo $SHA
             # docker load -i ./app.tar
             # while read REPOSITORY TAG IMAGE_ID
             # do
@@ -244,7 +246,7 @@ jobs:
             echo ${{ secrets.COSIGN_PUB }} > openssl.pub
 
             ls
-            
+
             # cosign --help
             docker pull ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA
 
