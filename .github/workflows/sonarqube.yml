@@ -235,11 +235,14 @@ jobs:
           run: |
             SHA=$(git rev-parse --short HEAD)
 
-            echo $COSIGN_KEY > cosignpbase64.key
-            echo $COSIGN_PUB > cosignpbase64.pub
+            # echo $COSIGN_KEY > cosignpbase64.key
+            # echo $COSIGN_PUB > cosignpbase64.pub
 
-            base64 -di cosignpbase64.key > cosignp.key
-            base64 -di cosignpbase64.pub > cosignp.pub
+            # base64 -di cosignpbase64.key > cosignp.key
+            # base64 -di cosignpbase64.pub > cosignp.pub
+
+            echo $COSIGN_KEY > cosignp.key
+            echo $COSIGN_PUB > cosignp.pub
 
             # docker load -i ./app.tar
             # while read REPOSITORY TAG IMAGE_ID
