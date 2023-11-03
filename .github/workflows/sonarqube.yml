@@ -238,8 +238,8 @@ jobs:
             echo $COSIGN_KEY > cosignpbase64.key
             echo $COSIGN_PUB > cosignpbase64.pub
 
-            cat cosignpbase64.key | base64 -d - > cosignp.key
-            cat cosignpbase64.pub | base64 -d - > cosignp.pub
+            base64 -d cosignpbase64.key > cosignp.key
+            base64 -d cosignpbase64.pub > cosignp.pub
 
             # docker load -i ./app.tar
             # while read REPOSITORY TAG IMAGE_ID
