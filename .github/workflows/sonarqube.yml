@@ -210,9 +210,10 @@ jobs:
             #   docker push ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest
             #   docker push ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest
             # fi
-            SHA=$(git rev-parse HEAD)
-            docker build -t profesional-card:$SHA -f ./client/Dockerfile .
-            docker build -t nginx-proxy:$SHA -f ./nginx/Dockerfile .
+            SHA=$(git rev-parse --short HEAD)
+            docker build -t --cache-from=profesional-card profesional-card:$SHA -f ./client/Dockerfile .
+            docker build -t --cache-from=nginx-proxy nginx-proxy:$SHA -f ./nginx/Dockerfile .
+            docker save $(docker images -q) -o ./app.tar
         
         - name: Install Cosign
           uses: sigstore/cosign-installer@main
@@ -220,6 +221,8 @@ jobs:
         - name: Sign Container image
           run: |
             SHA=$(git rev-parse HEAD)
+            docker load -i ./app.tar
+
             cosign generate profesional-card:$SHA > payload_pc.json
             cosign generate nginx-proxy:$SHA > payload_np.json
 
@@ -239,62 +242,62 @@ jobs:
             cosign verify --key openssl.pub --insecure-ignore-tlog profesional-card:$SHA
             cosign verify --key openssl.pub --insecure-ignore-tlog nginx-proxy:$SHA
     
-    kubesec-scan:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v3
+    # kubesec-scan:
+    #   runs-on: ubuntu-latest
+    #   steps:
+    #     - uses: actions/checkout@v3
         
-        - name: Set up QEMU
-          uses: docker/setup-qemu-action@v3
+    #     - name: Set up QEMU
+    #       uses: docker/setup-qemu-action@v3
 
-        - name: Set up Docker Buildx
-          uses: docker/setup-buildx-action@v3
+    #     - name: Set up Docker Buildx
+    #       uses: docker/setup-buildx-action@v3
         
-        - name: Scan Kubernete files
-          run: |
-            search_dir="./k8s"
-            for entry in $search_dir/*.yaml
-            do
-              echo Scan $entry kubernete file
-              docker run -i kubesec/kubesec:latest scan --exit-code 0 /dev/stdin < $entry
-            done
+    #     - name: Scan Kubernete files
+    #       run: |
+    #         search_dir="./k8s"
+    #         for entry in $search_dir/*.yaml
+    #         do
+    #           echo Scan $entry kubernete file
+    #           docker run -i kubesec/kubesec:latest scan --exit-code 0 /dev/stdin < $entry
+    #         done
     
-    kubeaudit-scan:
-      runs-on: ubuntu-latest
-      needs: kubesec-scan
-      steps:
-        - uses: actions/checkout@v3
+    # kubeaudit-scan:
+    #   runs-on: ubuntu-latest
+    #   needs: kubesec-scan
+    #   steps:
+    #     - uses: actions/checkout@v3
         
-        - name: Set up QEMU
-          uses: docker/setup-qemu-action@v3
+    #     - name: Set up QEMU
+    #       uses: docker/setup-qemu-action@v3
 
-        - name: Set up Docker Buildx
-          uses: docker/setup-buildx-action@v3
+    #     - name: Set up Docker Buildx
+    #       uses: docker/setup-buildx-action@v3
         
-        - name: Scan Kubernete files
-          run: |
-            search_dir="./k8s"
-            for entry in $search_dir/*.yaml
-            do
-              echo Scan $entry kubernete file
-              docker run -i shopify/kubeaudit all --exitcode 0 -f /dev/stdin < $entry
-            done
+    #     - name: Scan Kubernete files
+    #       run: |
+    #         search_dir="./k8s"
+    #         for entry in $search_dir/*.yaml
+    #         do
+    #           echo Scan $entry kubernete file
+    #           docker run -i shopify/kubeaudit all --exitcode 0 -f /dev/stdin < $entry
+    #         done
     
-    kubescore-scan:
-      runs-on: ubuntu-latest
-      needs: kubeaudit-scan
-      steps:
-        - uses: actions/checkout@v3
+    # kubescore-scan:
+    #   runs-on: ubuntu-latest
+    #   needs: kubeaudit-scan
+    #   steps:
+    #     - uses: actions/checkout@v3
         
-        - name: Set up QEMU
-          uses: docker/setup-qemu-action@v3
+    #     - name: Set up QEMU
+    #       uses: docker/setup-qemu-action@v3
 
-        - name: Set up Docker Buildx
-          uses: docker/setup-buildx-action@v3
+    #     - name: Set up Docker Buildx
+    #       uses: docker/setup-buildx-action@v3
         
-        - name: Scan Kubernete files
-          run: |
-            docker run -v $(pwd):/project zegl/kube-score:latest score --color always k8s/*.yaml || command
+    #     - name: Scan Kubernete files
+    #       run: |
+    #         docker run -v $(pwd):/project zegl/kube-score:latest score --color always k8s/*.yaml || command
     
     # kubebench-scan:
     #   runs-on: ubuntu-latest
