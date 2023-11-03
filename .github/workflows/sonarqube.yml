@@ -193,60 +193,63 @@ jobs:
           with:
             cosign-release: 'v2.1.1'
         
-        # - name: Set up QEMU
-        #   uses: docker/setup-qemu-action@v3
+        - name: Set up QEMU
+          uses: docker/setup-qemu-action@v3
 
-        # - name: Set up Docker Buildx
-        #   uses: docker/setup-buildx-action@v3
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v3
           
-        # - name: Login to Docker Container Registry
-        #   uses: docker/login-action@v3
-        #   with:
-        #     registry: ${{ secrets.DOCKER_REGISTRY }}
-        #     username: ${{ secrets.DOCKER_USERNAME }}
-        #     password: ${{ secrets.DOCKER_TOKEN }}
+        - name: Login to Docker Container Registry
+          uses: docker/login-action@v3
+          with:
+            registry: ${{ secrets.DOCKER_REGISTRY }}
+            username: ${{ secrets.DOCKER_USERNAME }}
+            password: ${{ secrets.DOCKER_TOKEN }}
         
-        # - name: Build and push
-        #   # env:
-        #   #   DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
-        #   run: |
-        #     # results=$(docker pull ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest || docker images -q ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest)
-        #     # # echo $results
-        #     # if [[ -n $results ]]; then
-        #     #   echo "images exist"
-        #     # else
-        #     #   echo "Container doesn't exist"
-        #     #   docker build -t ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest -f ./client/Dockerfile .
-        #     #   docker build -t ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest -f ./nginx/Dockerfile .
-        #     #   docker push ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest
-        #     #   docker push ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest
-        #     # fi
-        #     SHA=$(git rev-parse --short HEAD)
-        #     # docker build -t profesional-card:$SHA -f ./client/Dockerfile .
-        #     docker build -t ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA -f ./nginx/Dockerfile .
+        - name: Build and push
+          # env:
+          #   DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+          run: |
+            # results=$(docker pull ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest || docker images -q ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest)
+            # # echo $results
+            # if [[ -n $results ]]; then
+            #   echo "images exist"
+            # else
+            #   echo "Container doesn't exist"
+            #   docker build -t ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest -f ./client/Dockerfile .
+            #   docker build -t ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest -f ./nginx/Dockerfile .
+            #   docker push ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest
+            #   docker push ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest
+            # fi
+            SHA=$(git rev-parse --short HEAD)
+            # docker build -t profesional-card:$SHA -f ./client/Dockerfile .
+            docker build -t ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA -f ./nginx/Dockerfile .
 
-        #     # docker save $(docker images ls --filter=reference="*$SHA*" -q) -o app.tar
-        #     # docker images | sed '1d' | awk '{print $1 " " $2 " " $3}' > mydockersimages.list
+            # docker save $(docker images ls --filter=reference="*$SHA*" -q) -o app.tar
+            # docker images | sed '1d' | awk '{print $1 " " $2 " " $3}' > mydockersimages.list
 
 
-        #     docker push ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA
+            docker push ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA
             
-        # - name: Get the digest of the OCI artifact
-        #   env:
-        #     CONTAINER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
-        #   id: crane
-        #   run: |
-        #     DIGEST=$(crane digest $CONTAINER_REGISTRY/nginx-proxy:$(git rev-parse --short HEAD))
-        #     echo "DIGEST=$DIGEST" >> $GITHUB_OUTPUT
+        - name: Get the digest of the OCI artifact
+          env:
+            CONTAINER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+          id: crane
+          run: |
+            DIGEST=$(crane digest $CONTAINER_REGISTRY/nginx-proxy:$(git rev-parse --short HEAD))
+            echo "DIGEST=$DIGEST" >> $GITHUB_OUTPUT
 
         - name: Sign Container image
           env:
-            COSIGN_KEY: ${{ secrets.COSIGN_KEY }}
-            COSIGN_PUB: ${{ secrets.COSIGN_PUB }}
-            COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_KEY }}
-            COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+            # COSIGN_KEY: ${{ secrets.COSIGN_KEY }}
+            # COSIGN_PUB: ${{ secrets.COSIGN_PUB }}
+            # COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_KEY }}
+            # COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+            DIGEST: ${{ steps.crane.outputs.DIGEST }}
           run: |
+            
             SHA=$(git rev-parse --short HEAD)
+            cosign sign --yes ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:${SHA}@${DIGEST}
 
             # echo $COSIGN_KEY > cosignpbase64.key
             # echo $COSIGN_PUB > cosignpbase64.pub
@@ -257,13 +260,13 @@ jobs:
             # echo $COSIGN_KEY > cosignp.key
             # echo $COSIGN_PUB > cosignp.pub
 
-            echo "${{ secrets.COSIGN_KEY }}" > cosign.key
+            # echo "${{ secrets.COSIGN_KEY }}" > cosign.key
 
-            echo "$COSIGN_KEY" | sed 's/./& /g'
+            # echo "$COSIGN_KEY" | sed 's/./& /g'
 
-            echo "$COSIGN_PASSWORD" | sed 's/./& /g'
+            # echo "$COSIGN_PASSWORD" | sed 's/./& /g'
 
-            echo "$COSIGN_PUB" | sed 's/./& /g'
+            # echo "$COSIGN_PUB" | sed 's/./& /g'
 
             # docker load -i ./app.tar
             # while read REPOSITORY TAG IMAGE_ID
