@@ -230,17 +230,17 @@ jobs:
             echo ${{ secrets.COSIGN_KEY }} > openssl.key
             echo ${{ secrets.COSIGN_PUB }} > openssl.pub
 
-            openssl dgst -sha256 -sign openssl.key -out payload_pc.sig payload_pc.json
+            # openssl dgst -sha256 -sign openssl.key -out payload_pc.sig payload_pc.json
             openssl dgst -sha256 -sign openssl.key -out payload_np.sig payload_np.json
 
-            cat payload_pc.sig | base64 > payloadbase64_pc.sig
+            # cat payload_pc.sig | base64 > payloadbase64_pc.sig
             cat payload_np.sig | base64 > payloadbase64_np.sig
 
             # cosign sign --key cosign.key $IMAGE
-            cosign attach signature --payload payload_pc.json --signature payloadbase64_pc.sig profesional-card:$SHA
+            # cosign attach signature --payload payload_pc.json --signature payloadbase64_pc.sig profesional-card:$SHA
             cosign attach signature --payload payload_np.json --signature payloadbase64_np.sig nginx-proxy:$SHA
 
-            cosign verify --key openssl.pub --insecure-ignore-tlog profesional-card:$SHA
+            # cosign verify --key openssl.pub --insecure-ignore-tlog profesional-card:$SHA
             cosign verify --key openssl.pub --insecure-ignore-tlog nginx-proxy:$SHA
     
     # kubesec-scan:
