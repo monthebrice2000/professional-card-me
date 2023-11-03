@@ -241,15 +241,15 @@ jobs:
 
         - name: Sign Container image
           env:
-            # COSIGN_KEY: ${{ secrets.COSIGN_KEY }}
+            COSIGN_KEY: ${{ secrets.COSIGN_KEY }}
             # COSIGN_PUB: ${{ secrets.COSIGN_PUB }}
             # COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_KEY }}
-            # COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+            COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
             DIGEST: ${{ steps.crane.outputs.DIGEST }}
           run: |
             
             SHA=$(git rev-parse --short HEAD)
-            cosign sign --yes ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:${SHA}@${DIGEST}
+            cosign sign --yes --key env://COSIGN_KEY ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:${SHA}@${DIGEST}
 
             # echo $COSIGN_KEY > cosignpbase64.key
             # echo $COSIGN_PUB > cosignpbase64.pub
