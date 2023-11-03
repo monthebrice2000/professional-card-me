@@ -242,10 +242,9 @@ jobs:
 
             ls
 
-            cosign --version
-
             echo "$COSIGN_KEY" > openssl.key
             echo "$COSIGN_PUB" > openssl.pub
+            ls
     
     # kubesec-scan:
     #   runs-on: ubuntu-latest
