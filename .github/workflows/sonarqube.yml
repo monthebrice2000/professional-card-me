@@ -188,12 +188,12 @@ jobs:
         - name: Set up Docker Buildx
           uses: docker/setup-buildx-action@v3
           
-        # - name: Login to Docker Container Registry
-        #   uses: docker/login-action@v3
-        #   with:
-        #     registry: ${{ secrets.DOCKER_REGISTRY }}
-        #     username: ${{ secrets.DOCKER_USERNAME }}
-        #     password: ${{ secrets.DOCKER_TOKEN }}
+        - name: Login to Docker Container Registry
+          uses: docker/login-action@v3
+          with:
+            registry: ${{ secrets.DOCKER_REGISTRY }}
+            username: ${{ secrets.DOCKER_USERNAME }}
+            password: ${{ secrets.DOCKER_TOKEN }}
         
         - name: Build and push
           # env:
@@ -231,7 +231,7 @@ jobs:
             done < mydockersimages.list
 
             docker images ls --filter=reference="*$SHA*"
-            
+
             # cosign generate profesional-card:$SHA > payload_pc.json
             cosign generate nginx-proxy:$SHA > payload_np.json
 
