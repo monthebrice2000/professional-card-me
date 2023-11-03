@@ -186,6 +186,8 @@ jobs:
       steps:
         - uses: actions/checkout@v3
 
+        - uses: imjasonh/setup-crane@v0.3
+
         - name: Install Cosign
           uses: sigstore/cosign-installer@v3.1.1
         
@@ -227,11 +229,20 @@ jobs:
 
             docker push ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA
             
-        
+        - name: Get the digest of the OCI artifact
+          env:
+            CONTAINER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+          id: crane
+          run: |
+            DIGEST=$(crane digest $CONTAINER_REGISTRY/nginx-proxy:$(git rev-parse --short HEAD))
+            echo "DIGEST=$DIGEST" >> $GITHUB_OUTPUT
+
         - name: Sign Container image
           env:
             COSIGN_KEY: ${{ secrets.COSIGN_KEY }}
             COSIGN_PUB: ${{ secrets.COSIGN_PUB }}
+            COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_KEY }}
+            COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
           run: |
             SHA=$(git rev-parse --short HEAD)
 
@@ -263,11 +274,9 @@ jobs:
 
             # cosign sign --key cosign.key $IMAGE
             # cosign attach signature --payload payload_pc.json --signature payloadbase64_pc.sig profesional-card:$SHA
-            #cosign attach signature --payload payload_np.json --signature payloadbase64_np.sig ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA
+            # cosign attach signature --payload payload_np.json --signature payloadbase64_np.sig ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA
 
-            ls -lt
-
-            cosign sign --key cosignp.key ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA
+            cosign sign --yes --key env://COSIGN_PRIVATE_KEY ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy@${{ steps.crane.outputs.DIGEST }}
 
             # cosign verify --key openssl.pub --insecure-ignore-tlog profesional-card:$SHA
             # cosign verify --key cosignp.pub --insecure-ignore-tlog ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:$SHA
