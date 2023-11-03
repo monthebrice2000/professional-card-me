@@ -3,6 +3,10 @@
 .husky/
 .next/
 
+./keys_openssl
+docker-exists-image.sh
+.grype/
+
 .env*
 Dockerfile
 README.md

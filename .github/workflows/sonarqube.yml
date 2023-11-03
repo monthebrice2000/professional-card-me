@@ -177,39 +177,67 @@ jobs:
   #       with:
   #         sarif_file: snyk.sarif
   
-    # docker:
-    #   runs-on: ubuntu-latest
-    #   steps:
-    #     - uses: actions/checkout@v3
+    docker-image-sign:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
         
-    #     - name: Set up QEMU
-    #       uses: docker/setup-qemu-action@v3
+        - name: Set up QEMU
+          uses: docker/setup-qemu-action@v3
 
-    #     - name: Set up Docker Buildx
-    #       uses: docker/setup-buildx-action@v3
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v3
           
-    #     - name: Login to Docker Container Registry
-    #       uses: docker/login-action@v3
-    #       with:
-    #         registry: ${{ secrets.DOCKER_REGISTRY }}
-    #         username: ${{ secrets.DOCKER_USERNAME }}
-    #         password: ${{ secrets.DOCKER_TOKEN }}
+        # - name: Login to Docker Container Registry
+        #   uses: docker/login-action@v3
+        #   with:
+        #     registry: ${{ secrets.DOCKER_REGISTRY }}
+        #     username: ${{ secrets.DOCKER_USERNAME }}
+        #     password: ${{ secrets.DOCKER_TOKEN }}
         
-    #     - name: Build and push
-    #       # env:
-    #       #   DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
-    #       run: |
-    #         results=$(docker pull ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest || docker images -q ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest)
-    #         # echo $results
-    #         if [[ -n $results ]]; then
-    #           echo "images exist"
-    #         else
-    #           echo "Container doesn't exist"
-    #           docker build -t ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest -f ./client/Dockerfile .
-    #           docker build -t ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest -f ./nginx/Dockerfile .
-    #           docker push ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest
-    #           docker push ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest
-    #         fi
+        - name: Build and push
+          # env:
+          #   DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+          run: |
+            # results=$(docker pull ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest || docker images -q ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest)
+            # # echo $results
+            # if [[ -n $results ]]; then
+            #   echo "images exist"
+            # else
+            #   echo "Container doesn't exist"
+            #   docker build -t ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest -f ./client/Dockerfile .
+            #   docker build -t ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest -f ./nginx/Dockerfile .
+            #   docker push ${{ secrets.DOCKER_REGISTRY }}/profesional-card:latest
+            #   docker push ${{ secrets.DOCKER_REGISTRY }}/nginx-proxy:latest
+            # fi
+            SHA=$(git rev-parse HEAD)
+            docker build -t profesional-card:$SHA -f ./client/Dockerfile .
+            docker build -t nginx-proxy:$SHA -f ./nginx/Dockerfile .
+        
+        - name: Install Cosign
+          uses: sigstore/cosign-installer@main
+        
+        - name: Sign Container image
+          run: |
+            SHA=$(git rev-parse HEAD)
+            cosign generate profesional-card:$SHA > payload_pc.json
+            cosign generate nginx-proxy:$SHA > payload_np.json
+
+            echo ${{ secrets.COSIGN_KEY }} > openssl.key
+            echo ${{ secrets.COSIGN_PUB }} > openssl.pub
+
+            openssl dgst -sha256 -sign openssl.key -out payload_pc.sig payload_pc.json
+            openssl dgst -sha256 -sign openssl.key -out payload_np.sig payload_np.json
+
+            cat payload_pc.sig | base64 > payloadbase64_pc.sig
+            cat payload_np.sig | base64 > payloadbase64_np.sig
+
+            # cosign sign --key cosign.key $IMAGE
+            cosign attach signature --payload payload_pc.json --signature payloadbase64_pc.sig profesional-card:$SHA
+            cosign attach signature --payload payload_np.json --signature payloadbase64_np.sig nginx-proxy:$SHA
+
+            cosign verify --key openssl.pub --insecure-ignore-tlog profesional-card:$SHA
+            cosign verify --key openssl.pub --insecure-ignore-tlog nginx-proxy:$SHA
     
     kubesec-scan:
       runs-on: ubuntu-latest

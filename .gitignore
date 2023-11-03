@@ -1,6 +1,8 @@
+./keys_openssl
 docker-exists-image.sh
 .grype/
-httpfuzz
+
+
 # Logs
 logs
 *.log
