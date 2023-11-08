@@ -527,18 +527,14 @@ jobs:
       steps:
         - name: Checkout
           uses: actions/checkout@v3
-
-        - name: Install Terrascan
-          run: |
-            curl -L "$(curl -s https://api.github.com/repos/tenable/terrascan/releases/latest | grep -o -E "https://.+?_Darwin_x86_64.tar.gz")" > terrascan.tar.gz
-            tar -xf terrascan.tar.gz terrascan && rm terrascan.tar.gz
-            install terrascan /usr/local/bin && rm terrascan
-            terrascan scan -h
-
-            # sudo install terrascan /usr/local/bin
-
+        - name: Set up QEMU
+          uses: docker/setup-qemu-action@v3
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v3
         - name: Scan vulnerabilities
           run: |
+            alias terrascan="docker run --rm -it -v "$(pwd):/iac" -w /iac tenable/terrascan"
+            
             terrascan scan -i docker -v -d ./nginx || command
             terrascan scan -i docker -v -d ./client || command
 
