@@ -504,7 +504,7 @@ jobs:
             python-version: '3.9'
             cache: 'pip' # caching pip dependencies
         - name: Install Checkov
-          run: pip3 install -r requirement.txt
+          run: pip3 install -r requirements.txt
         - name: Scan vulnerabilities
           run: |
             checkov --no-fail-on-crash -d ./nginx --framework dockerfile
