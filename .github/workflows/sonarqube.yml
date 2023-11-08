@@ -465,27 +465,58 @@ jobs:
     #       run: |
     #         docker run --read-only --cap-drop all --rm -it jumanjiman/ssllabs-scan:latest -grade -usecache ${{ secrets.WEBAPP_URL }}
 
-    burpsuite-scan:
+    # burpsuite-scan:
+    #   runs-on: ubuntu-latest
+    #   name: Scan the webapplication with burpsuite
+    #   # needs: docker
+    #   permissions: 
+    #     issues: write
+    #   steps:
+    #     - name: Checkout
+    #       uses: actions/checkout@v3
+
+    #     - name: Run CI-driven scan Action Step
+    #       uses: PortSwigger/ci-driven-scan-github-action@main
+
+    #     # You can replace this next step with any JUnit XML parser.
+    #     - name: Publish Test Report
+    #       if: always()                                    # Forces this step to always run
+    #       uses: mikepenz/action-junit-report@v3
+    #       with:
+    #         report_paths: 'burp_junit_report.xml'
+    #         fail_on_failure: false
+    #         require_tests: false
+
+    checkov-scan:
       runs-on: ubuntu-latest
-      name: Scan the webapplication with burpsuite
+      name: Scan all artifacts
       # needs: docker
       permissions: 
-        issues: write
+        contents: read
+        security-events: write
+
       steps:
         - name: Checkout
           uses: actions/checkout@v3
 
-        - name: Run CI-driven scan Action Step
-          uses: PortSwigger/ci-driven-scan-github-action@main
-
-        # You can replace this next step with any JUnit XML parser.
-        - name: Publish Test Report
-          if: always()                                    # Forces this step to always run
-          uses: mikepenz/action-junit-report@v3
+        - uses: actions/setup-python@v4
           with:
-            report_paths: 'burp_junit_report.xml'
-            fail_on_failure: false
-            require_tests: false
+            python-version: '3.9'
+            cache: 'pip' # caching pip dependencies
+        - name: Install Checkov
+          run: pip install checkov
+        - name: Scan vulnerabilities
+          run: |
+            checkov --no-fail-on-crash -d ./nginx --framework dockerfile
+            checkov --no-fail-on-crash -d ./client --framework dockerfile
+
+            export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+            checkov --no-fail-on-crash -d . --framework github_configuration
+
+            checkov --no-fail-on-crash --skip-path ./k8s/**.sh -d ./k8s --framework kubernetes
+
+            
+
 
     # grype-scan:
     #   needs: docker
