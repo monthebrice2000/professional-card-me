@@ -507,13 +507,13 @@ jobs:
           run: pip3 install -r requirements.txt
         - name: Scan vulnerabilities
           run: |
-            checkov --soft-fail-on SOFT_FAIL_ON -d ./nginx --framework dockerfile
-            checkov --soft-fail-on SOFT_FAIL_ON -d ./client --framework dockerfile
+            checkov --soft-fail -d ./nginx --framework dockerfile
+            checkov --soft-fail -d ./client --framework dockerfile
 
             export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
-            checkov --soft-fail-on SOFT_FAIL_ON -d . --framework github_configuration
+            checkov --soft-fail -d . --framework github_configuration
 
-            checkov --soft-fail-on SOFT_FAIL_ON --skip-path ./k8s/**.sh -d ./k8s --framework kubernetes
+            checkov --soft-fail --skip-path ./k8s/**.sh -d ./k8s --framework kubernetes
 
 
 
