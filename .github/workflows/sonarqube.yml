@@ -515,8 +515,31 @@ jobs:
 
     #         checkov --soft-fail --skip-path ./k8s/**.sh -d ./k8s --framework kubernetes
     
+    # terrascan-scan:
+    #   runs-on: ubuntu-latest
+    #   name: Scan all artifacts
+    #   # needs: docker
+    #   permissions: 
+    #     contents: read
+    #     security-events: write
 
-    terrascan-scan:
+    #   steps:
+    #     - name: Checkout
+    #       uses: actions/checkout@v3
+    #     - name: Set up QEMU
+    #       uses: docker/setup-qemu-action@v3
+    #     - name: Set up Docker Buildx
+    #       uses: docker/setup-buildx-action@v3
+    #     - name: Scan vulnerabilities
+    #       run: |
+    #         alias terrascan="docker run --rm -it -v $(pwd):/iac -w /iac tenable/terrascan"
+
+    #         docker run --rm -t -v $(pwd):/iac -w /iac tenable/terrascan scan -i docker -v -d ./nginx || command
+    #         docker run --rm -t -v $(pwd):/iac -w /iac tenable/terrascan scan -i docker -v -d ./client || command
+    #         docker run --rm -t -v $(pwd):/iac -w /iac tenable/terrascan scan -i k8s -v -d ./k8s || command
+    #         docker run --rm -t -v $(pwd):/iac -w /iac tenable/terrascan scan -i github -r git -v --repo-url git@github.com:monthebrice2000/professional-card-me.git// || command
+
+    docker-bench-scan:
       runs-on: ubuntu-latest
       name: Scan all artifacts
       # needs: docker
@@ -527,18 +550,15 @@ jobs:
       steps:
         - name: Checkout
           uses: actions/checkout@v3
-        - name: Set up QEMU
-          uses: docker/setup-qemu-action@v3
-        - name: Set up Docker Buildx
-          uses: docker/setup-buildx-action@v3
+        - name: Install
+          run: |
+            git clone https://github.com/docker/docker-bench-security.git
+            
         - name: Scan vulnerabilities
           run: |
-            alias terrascan="docker run --rm -it -v $(pwd):/iac -w /iac tenable/terrascan"
-
-            docker run --rm -t -v $(pwd):/iac -w /iac tenable/terrascan scan -i docker -v -d ./nginx || command
-            docker run --rm -t -v $(pwd):/iac -w /iac tenable/terrascan scan -i docker -v -d ./client || command
-            docker run --rm -t -v $(pwd):/iac -w /iac tenable/terrascan scan -i k8s -v -d ./k8s || command
-            docker run --rm -t -v $(pwd):/iac -w /iac tenable/terrascan scan -i github -r git -v --repo-url git@github.com:monthebrice2000/professional-card-me.git// || command
+            cd docker-bench-security
+            sudo sh docker-bench-security.sh
+    
 
 
 
