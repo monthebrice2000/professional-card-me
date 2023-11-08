@@ -487,7 +487,36 @@ jobs:
     #         fail_on_failure: false
     #         require_tests: false
 
-    checkov-scan:
+    # checkov-scan:
+    #   runs-on: ubuntu-latest
+    #   name: Scan all artifacts
+    #   # needs: docker
+    #   permissions: 
+    #     contents: read
+    #     security-events: write
+
+    #   steps:
+    #     - name: Checkout
+    #       uses: actions/checkout@v3
+
+    #     - uses: actions/setup-python@v4
+    #       with:
+    #         python-version: '3.9'
+    #         cache: 'pip' # caching pip dependencies
+    #     - name: Install Checkov
+    #       run: pip3 install -r requirements.txt
+    #     - name: Scan vulnerabilities
+    #       run: |
+    #         checkov --soft-fail -d ./nginx --framework dockerfile
+    #         checkov --soft-fail -d ./client --framework dockerfile
+
+    #         export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+    #         checkov --soft-fail -d . --framework github_configuration
+
+    #         checkov --soft-fail --skip-path ./k8s/**.sh -d ./k8s --framework kubernetes
+    
+
+    terrascan-scan:
       runs-on: ubuntu-latest
       name: Scan all artifacts
       # needs: docker
@@ -499,21 +528,24 @@ jobs:
         - name: Checkout
           uses: actions/checkout@v3
 
-        - uses: actions/setup-python@v4
-          with:
-            python-version: '3.9'
-            cache: 'pip' # caching pip dependencies
-        - name: Install Checkov
-          run: pip3 install -r requirements.txt
+        - name: Install Terrascan
+          run: |
+            curl -L "$(curl -s https://api.github.com/repos/tenable/terrascan/releases/latest | grep -o -E "https://.+?_Darwin_x86_64.tar.gz")" > terrascan.tar.gz
+            tar -xf terrascan.tar.gz terrascan && rm terrascan.tar.gz
+            install terrascan /usr/local/bin && rm terrascan
+            terrascan scan -h
+
+            sudo install terrascan /usr/local/bin
+
         - name: Scan vulnerabilities
           run: |
-            checkov --soft-fail -d ./nginx --framework dockerfile
-            checkov --soft-fail -d ./client --framework dockerfile
+            terrascan scan -i docker -v -d ./nginx || command
+            terrascan scan -i docker -v -d ./client || command
 
             export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
-            checkov --soft-fail -d . --framework github_configuration
+            terrascan scan -i github -r git -v -u git@github.com:monthebrice2000/professional-card-me.git// || command
 
-            checkov --soft-fail --skip-path ./k8s/**.sh -d ./k8s --framework kubernetes
+            terrascan scan -i k8s -v -d ./k8s || command
 
 
 
