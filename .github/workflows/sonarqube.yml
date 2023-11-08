@@ -568,7 +568,9 @@ jobs:
         - name: lint docker files
           run: |
             docker run --rm -i -v $(pwd)/.hadolint.yaml:$HOME/.config/hadolint.yaml hadolint/hadolint < ./nginx/Dockerfile || command
+            echo "lint nginx docker file"
             docker run --rm -i -v $(pwd)/.hadolint.yaml:$HOME/.config/hadolint.yaml hadolint/hadolint < ./client/Dockerfile || command
+            echo "lint client docker file"
     
 
 
