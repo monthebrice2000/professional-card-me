@@ -4,6 +4,7 @@
 .next/
 docker-compose.yml
 httpfuzz
+.hadolint.yaml
 
 .env*
 Dockerfile

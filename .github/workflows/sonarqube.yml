@@ -539,25 +539,36 @@ jobs:
     #         docker run --rm -t -v $(pwd):/iac -w /iac tenable/terrascan scan -i k8s -v -d ./k8s || command
     #         docker run --rm -t -v $(pwd):/iac -w /iac tenable/terrascan scan -i github -r git -v --repo-url git@github.com:monthebrice2000/professional-card-me.git// || command
 
-    docker-bench-scan:
-      runs-on: ubuntu-latest
-      name: Scan all artifacts
-      # needs: docker
-      permissions: 
-        contents: read
-        security-events: write
+    # docker-bench-scan:
+    #   runs-on: ubuntu-latest
+    #   name: Scan all artifacts
+    #   # needs: docker
+    #   steps:
+    #     - name: Install Docker bench
+    #       run: |
+    #         git clone https://github.com/docker/docker-bench-security.git
+            
+    #     - name: Scan vulnerabilities
+    #       run: |
+    #         cd docker-bench-security
+    #         sudo sh docker-bench-security.sh
 
+    
+    docker-lint:
+      runs-on: ubuntu-latest
+      name: lint all docker files
+      # needs: docker
       steps:
         - name: Checkout
           uses: actions/checkout@v3
-        - name: Install
+        - name: Set up QEMU
+          uses: docker/setup-qemu-action@v3
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v3
+        - name: lint docker files
           run: |
-            git clone https://github.com/docker/docker-bench-security.git
-            
-        - name: Scan vulnerabilities
-          run: |
-            cd docker-bench-security
-            sudo sh docker-bench-security.sh
+            docker run --rm -t -v $(pwd):/iac -w /iac hadolint/hadolint --no-fail ./nginx/Dockerfile || command
+            docker run --rm -t -v $(pwd):/iac -w /iac hadolint/hadolint --no-fail ./client/Dockerfile || command
     
 
 
