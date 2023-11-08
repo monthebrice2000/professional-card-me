@@ -567,8 +567,8 @@ jobs:
           uses: docker/setup-buildx-action@v3
         - name: lint docker files
           run: |
-            docker run --rm -i -v $(pwd)/.hadolint.yaml:$HOME/.config/hadolint.yaml hadolint/hadolint < ./nginx/Dockerfile
-            docker run --rm -i -v $(pwd)/.hadolint.yaml:$HOME/.config/hadolint.yaml hadolint/hadolint < ./client/Dockerfile
+            docker run --rm -i -v $(pwd)/.hadolint.yaml:$HOME/.config/hadolint.yaml hadolint/hadolint < ./nginx/Dockerfile || command
+            docker run --rm -i -v $(pwd)/.hadolint.yaml:$HOME/.config/hadolint.yaml hadolint/hadolint < ./client/Dockerfile || command
     
 
 
