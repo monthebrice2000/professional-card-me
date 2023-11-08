@@ -535,8 +535,8 @@ jobs:
           run: |
             alias terrascan="docker run --rm -it -v $(pwd):/iac -w /iac tenable/terrascan"
 
-            docker run --rm -it -v $(pwd):/iac -w /iac tenable/terrascan scan -i docker -v -d ./nginx || command
-            docker run --rm -it -v $(pwd):/iac -w /iac tenable/terrascan scan -i docker -v -d ./client || command
+            docker run --rm -t -v $(pwd):/iac -w /iac tenable/terrascan scan -i docker -v -d ./nginx || command
+            docker run --rm -t -v $(pwd):/iac -w /iac tenable/terrascan scan -i docker -v -d ./client || command
 
             export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
             terrascan scan -i github -r git -v -u git@github.com:monthebrice2000/professional-card-me.git// || command
