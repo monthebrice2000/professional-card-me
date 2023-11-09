@@ -5,6 +5,7 @@
 docker-compose.yml
 httpfuzz
 .hadolint.yaml
+trivy.yaml/
 
 .env*
 Dockerfile

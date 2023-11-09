@@ -1,0 +1,9 @@
+exit-code: 0
+repository:
+  branch: master
+scan:
+  scanners:
+    - vuln
+    - config
+    - secret
+

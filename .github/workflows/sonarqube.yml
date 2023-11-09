@@ -554,9 +554,28 @@ jobs:
     #         sudo sh docker-bench-security.sh
 
     
-    docker-lint:
+    # docker-lint:
+    #   runs-on: ubuntu-latest
+    #   name: lint all docker files
+    #   # needs: docker
+    #   steps:
+    #     - name: Checkout
+    #       uses: actions/checkout@v3
+    #     - name: Set up QEMU
+    #       uses: docker/setup-qemu-action@v3
+    #     - name: Set up Docker Buildx
+    #       uses: docker/setup-buildx-action@v3
+    #     - name: lint docker files
+    #       run: |
+    #         docker run --rm -i -v $(pwd)/.hadolint.yaml:$HOME/.config/hadolint.yaml hadolint/hadolint < ./nginx/Dockerfile || command
+    #         echo "lint nginx docker file"
+    #         docker run --rm -i -v $(pwd)/.hadolint.yaml:$HOME/.config/hadolint.yaml hadolint/hadolint < ./client/Dockerfile || command
+    #         echo "lint client docker file"
+
+    
+    trivy-scan:
       runs-on: ubuntu-latest
-      name: lint all docker files
+      name: scan all artifacts
       # needs: docker
       steps:
         - name: Checkout
@@ -565,14 +584,21 @@ jobs:
           uses: docker/setup-qemu-action@v3
         - name: Set up Docker Buildx
           uses: docker/setup-buildx-action@v3
-        - name: lint docker files
+        - name: scan config files
           run: |
-            docker run --rm -i -v $(pwd)/.hadolint.yaml:$HOME/.config/hadolint.yaml hadolint/hadolint < ./nginx/Dockerfile || command
-            echo "lint nginx docker file"
-            docker run --rm -i -v $(pwd)/.hadolint.yaml:$HOME/.config/hadolint.yaml hadolint/hadolint < ./client/Dockerfile || command
-            echo "lint client docker file"
-    
+            docker run --rm -t -v $(pwd):/iac -w /iac aquasec/trivy config -c trivy.yaml ./nginx/Dockerfile
+            echo "scan nginx docker file"
+            docker run --rm -t -v $(pwd):/iac -w /iac aquasec/trivy config -c trivy.yaml ./client/Dockerfile
+            echo "scan client docker file"
 
+        - name: scan secrets and vulnes files
+          run: |
+            docker run --rm -t -v $(pwd):/iac -w /iac aquasec/trivy config -c trivy.yaml fs --scanners secret,config ./
+            echo "scan all file"
+        - name: scan git repository
+          run: |
+            docker run --rm -t -v $(pwd):/iac -w /iac aquasec/trivy repo -c trivy.yaml --scanners vuln,config,secret,license https://github.com/monthebrice2000/professional-card-me
+            echo "scan git repo"
 
 
 

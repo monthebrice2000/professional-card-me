@@ -2,7 +2,8 @@
 .github/
 .husky/
 .next/
-.hadolint.yaml
+.hadolint.yaml/
+trivy.yaml/
 
 ./keys_openssl
 docker-exists-image.sh
