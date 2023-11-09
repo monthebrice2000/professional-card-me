@@ -595,7 +595,7 @@ jobs:
         #   run: |
         #     docker run --rm -t -v $(pwd):/iac -w /iac aquasec/trivy config -c trivy.yaml fs ./
         #     echo "scan all file"
-        - name: scan git repository
+        - name: scan git repository 
           run: |
             docker run --rm -t -v $(pwd):/iac -w /iac aquasec/trivy repo -c trivy.yaml https://github.com/monthebrice2000/professional-card-me
             echo "scan git repo"
