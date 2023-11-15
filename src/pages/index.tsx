@@ -81,7 +81,8 @@ const Index = () => {
               <p className="pt-8 text-sm">
                 Passionné et doué par la conception et l&#39;automatisation, je
                 recherche CDI sur un poste de DevOps ou DevSecOps dans l&#39;objectif
-                d&#39;automatiser les processus de déploiement des applications, systèmes et réseaux avancés.
+                d&#39;automatiser les processus de déploiement 
+                des applications, systèmes et réseaux avancés.
               </p>
 
               <div className="flex flex-wrap items-center justify-center pb-8 pt-12">
