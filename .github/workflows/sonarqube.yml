@@ -586,9 +586,9 @@ jobs:
           uses: docker/setup-buildx-action@v3
         - name: scan config files
           run: |
-            docker run --rm -t -v $(pwd):/iac -w /iac aquasec/trivy config -c trivy.yaml ./nginx/Dockerfile
+            docker run --rm -t -v "$(pwd)":/iac -w /iac aquasec/trivy config -c trivy.yaml ./nginx/Dockerfile
             echo "scan nginx docker file"
-            docker run --rm -t -v $(pwd):/iac -w /iac aquasec/trivy config -c trivy.yaml ./client/Dockerfile
+            docker run --rm -t -v "$(pwd)":/iac -w /iac aquasec/trivy config -c trivy.yaml ./client/Dockerfile
             echo "scan client docker file"
 
         # - name: scan secrets and vulnes files
