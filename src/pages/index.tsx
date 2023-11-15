@@ -66,7 +66,7 @@ const Index = () => {
                 >
                   <path d="M9 12H1v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6h-8v2H9v-2zm0-1H0V5c0-1.1.9-2 2-2h4V2a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1h4a2 2 0 0 1 2 2v6h-9V9H9v2zm3-8V2H8v1h4z" />
                 </svg>{' '}
-                Futur Ingénieur DevSecOps
+                Ingénieur DevSecOps / Ingénieur Logiciel
               </p>
               <p className="flex items-center justify-center pt-2 text-xs text-gray-600 lg:justify-start lg:text-sm">
                 <svg
@@ -80,8 +80,8 @@ const Index = () => {
               </p>
               <p className="pt-8 text-sm">
                 Passionné et doué par la conception et l&#39;automatisation, je
-                recherche CDI sur un poste de DevOps ou DevSecOps dans
-                l&#39;objectif d&#39;automatiser les processus de déploiement
+                recherche CDI sur un poste de DevOps/DevSecOps ou d'Ingénieur logiciel
+                dans l&#39;objectif d&#39;automatiser les processus de déploiement
                 des applications, systèmes et réseaux avancés.
               </p>
 
