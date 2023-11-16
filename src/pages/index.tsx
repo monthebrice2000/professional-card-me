@@ -82,7 +82,7 @@ const Index = () => {
                 Passionné et doué par la conception et l&#39;automatisation, je
                 recherche un CDI sur un poste de DevOps/DevSecOps ou
                 d&#39;Ingénieur logiciel dans l&#39;objectif de modéliser et
-                implémenter les modèles d'application et aussi d&#39;automatiser
+                implémenter les modèles d&#39;application et aussi d&#39;automatiser
                 les processus de déploiement des applications, systèmes et
                 réseaux avancés.
               </p>
